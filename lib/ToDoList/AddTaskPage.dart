@@ -6,7 +6,6 @@ import 'package:theme_provider/theme_provider.dart';
 import 'package:to_do_list_app/Global/Global.dart';
 import 'package:to_do_list_app/Loading/UserLoading.dart';
 import 'package:to_do_list_app/Task/Task.dart';
-import 'package:to_do_list_app/ToDoList/ToDoListWidget.dart';
 
 class AddTaskPage extends StatefulWidget {
   @override
@@ -58,7 +57,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   child: TextFormField(
                     initialValue: "",
                     style:
-                        ThemeProvider.themeOf(context).data.textTheme.headline2,
+                    ThemeProvider.themeOf(context).data.textTheme.headline2,
                     cursorColor: Colors.black,
                     key: titleKey,
                     decoration: InputDecoration(
@@ -104,7 +103,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   child: TextFormField(
                     initialValue: "",
                     style:
-                        ThemeProvider.themeOf(context).data.textTheme.headline2,
+                    ThemeProvider.themeOf(context).data.textTheme.headline2,
                     cursorColor: Colors.black,
                     key: descriptionKey,
                     decoration: InputDecoration(
@@ -144,9 +143,21 @@ class _AddTaskPageState extends State<AddTaskPage> {
                       'Choose category:',
                       style: TextStyle(
                         color: Colors.black,
-                        fontFamily: ThemeProvider.themeOf(context).data.textTheme.headline3.fontFamily,
-                        fontSize: ThemeProvider.themeOf(context).data.textTheme.headline3.fontSize,
-                        fontWeight: ThemeProvider.themeOf(context).data.textTheme.headline3.fontWeight,
+                        fontFamily: ThemeProvider.themeOf(context)
+                            .data
+                            .textTheme
+                            .headline3
+                            .fontFamily,
+                        fontSize: ThemeProvider.themeOf(context)
+                            .data
+                            .textTheme
+                            .headline3
+                            .fontSize,
+                        fontWeight: ThemeProvider.themeOf(context)
+                            .data
+                            .textTheme
+                            .headline3
+                            .fontWeight,
                       ),
                     ),
                   ),
@@ -162,9 +173,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                       child: Text(
                         'Normal',
                         style: TextStyle(
-                          color: ThemeProvider.controllerOf(context)
-                              .theme
-                              .id ==
+                          color: ThemeProvider.controllerOf(context).theme.id ==
                               'light_theme'
                               ? Colors.black
                               : Colors.white,
@@ -190,15 +199,15 @@ class _AddTaskPageState extends State<AddTaskPage> {
                           category = 'Normal';
                         });
                       },
-                      color: category == 'Normal' ? Colors.deepPurpleAccent : Colors.white,
+                      color: category == 'Normal'
+                          ? Colors.deepPurpleAccent
+                          : Colors.white,
                     ),
                     RaisedButton(
                       child: Text(
                         'Important',
                         style: TextStyle(
-                          color: ThemeProvider.controllerOf(context)
-                              .theme
-                              .id ==
+                          color: ThemeProvider.controllerOf(context).theme.id ==
                               'light_theme'
                               ? Colors.black
                               : Colors.white,
@@ -224,7 +233,9 @@ class _AddTaskPageState extends State<AddTaskPage> {
                           category = 'Important';
                         });
                       },
-                      color: category == 'Important' ? Colors.deepPurpleAccent : Colors.white,
+                      color: category == 'Important'
+                          ? Colors.deepPurpleAccent
+                          : Colors.white,
                     ),
                   ],
                 ),
@@ -239,7 +250,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
               'Add task',
               style: ThemeProvider.themeOf(context).data.textTheme.headline3,
             ),
-            onPressed: () {
+            onPressed: () async {
               if (titleKey.currentState.validate() &&
                   descriptionKey.currentState.validate()) {
                 if (category == "") {
@@ -247,22 +258,22 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 } else {
                   // TO DO SQLITE INSERT ROW IN TASKS TABLE
                   var index = _global.lastIndex + 1;
-                  return FutureBuilder(
-                    future: insertTask(
-                        Task(index, title, description, category, 0)),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) {
-                        return UserLoadingPage('Adding your new task ...');
-                      } else {
-                        _global.toDoList.add(
-                          Task(index, title, description, category, 0),
-                        );
-                        return ThemeConsumer(
-                          child: ToDoListWidget(),
-                        );
-                      }
-                    },
+                  showGeneralDialog(
+                    barrierDismissible: false,
+                    transitionDuration: Duration(milliseconds: 1),
+                    barrierColor: Colors.black12.withOpacity(0.9),
+                    context: context,
+                    pageBuilder: (a, b, c) => SizedBox.expand(
+                      child: UserLoadingPage('Adding your new task ...'),
+                    ),
                   );
+                  await insertTask(
+                      Task(index, title, description, category, 0));
+                  _global.toDoList.add(
+                    Task(index, title, description, category, 0),
+                  );
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
                 }
               } else {
                 showSnackBar(_scaffoldKey, 'Validation error.');

@@ -80,7 +80,7 @@ class _ToDoListWidgetState extends State<ToDoListWidget> {
                       },
                     );
                   },
-                  title: Card(
+                  title: Container(
                     color: ThemeProvider.controllerOf(context).theme.id ==
                             'light_theme'
                         ? (filteredList[i].done == 1

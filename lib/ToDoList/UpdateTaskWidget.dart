@@ -57,15 +57,18 @@ class _UpdateTaskWidgetState extends State<UpdateTaskWidget> {
                   child: Container(
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: ThemeProvider.themeOf(context).id == 'light_theme'
-                            ? Colors.black
-                            : Colors.white54,
+                        color:
+                            ThemeProvider.themeOf(context).id == 'light_theme'
+                                ? Colors.black
+                                : Colors.white54,
                       ),
                     ),
                     child: TextFormField(
                       initialValue: task.title,
-                      style:
-                          ThemeProvider.themeOf(context).data.textTheme.subtitle2,
+                      style: ThemeProvider.themeOf(context)
+                          .data
+                          .textTheme
+                          .subtitle2,
                       cursorColor: Colors.black,
                       key: titleKey,
                       decoration: InputDecoration(
@@ -97,15 +100,18 @@ class _UpdateTaskWidgetState extends State<UpdateTaskWidget> {
                   child: Container(
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: ThemeProvider.themeOf(context).id == 'light_theme'
-                            ? Colors.black
-                            : Colors.white54,
+                        color:
+                            ThemeProvider.themeOf(context).id == 'light_theme'
+                                ? Colors.black
+                                : Colors.white54,
                       ),
                     ),
                     child: TextFormField(
-                      initialValue: task.description.substring(0, 20) + "...",
-                      style:
-                          ThemeProvider.themeOf(context).data.textTheme.subtitle2,
+                      initialValue: task.description,
+                      style: ThemeProvider.themeOf(context)
+                          .data
+                          .textTheme
+                          .subtitle2,
                       cursorColor: Colors.black,
                       key: descriptionKey,
                       decoration: InputDecoration(
@@ -132,6 +138,7 @@ class _UpdateTaskWidgetState extends State<UpdateTaskWidget> {
                   ),
                 ),
                 FlatButton(
+                  color: Colors.deepPurpleAccent,
                   child: Text(
                     'Show categories',
                     style:
@@ -143,11 +150,11 @@ class _UpdateTaskWidgetState extends State<UpdateTaskWidget> {
                       builder: (context) {
                         return AlertDialog(
                           content: Container(
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 FlatButton(
+                                  color: Colors.deepPurpleAccent,
                                   child: Text(
                                     'Normal',
                                     style: TextStyle(
@@ -178,9 +185,11 @@ class _UpdateTaskWidgetState extends State<UpdateTaskWidget> {
                                     setState(() {
                                       task.category = 'Normal';
                                     });
+                                    Navigator.of(context).pop();
                                   },
                                 ),
                                 FlatButton(
+                                  color: Colors.deepPurpleAccent,
                                   child: Text(
                                     'Important',
                                     style: TextStyle(
@@ -211,6 +220,7 @@ class _UpdateTaskWidgetState extends State<UpdateTaskWidget> {
                                     setState(() {
                                       task.category = 'Important';
                                     });
+                                    Navigator.of(context).pop();
                                   },
                                 ),
                               ],
@@ -226,30 +236,35 @@ class _UpdateTaskWidgetState extends State<UpdateTaskWidget> {
           ),
         ),
         bottomNavigationBar: BottomAppBar(
+          color: Colors.deepPurpleAccent,
           child: Row(
             children: [
               FlatButton(
                 child: Text(
                   'Update this task',
-                  style: ThemeProvider.themeOf(context).data.textTheme.headline4,
+                  style:
+                      ThemeProvider.themeOf(context).data.textTheme.headline4,
                 ),
-                onPressed: () {
+                onPressed: () async {
                   if (titleKey.currentState.validate() &&
                       descriptionKey.currentState.validate()) {
                     if (task.category == "") {
-                      showSnackBar(
-                          _scaffoldKey, 'Please choose a category for your task');
+                      showSnackBar(_scaffoldKey,
+                          'Please choose a category for your task');
                     } else {
                       // updates the database and the local list in global
-                      return FutureBuilder(
-                        future: updateTask(task),
-                        builder: (context, snapshot) {
-                          if (!snapshot.hasData) {
-                            return UserLoadingPage('Updating your task ...');
-                          }
-                          return this.build(context);
-                        },
+                      showGeneralDialog(
+                        barrierDismissible: false,
+                        transitionDuration: Duration(milliseconds: 1),
+                        barrierColor: Colors.black12.withOpacity(0.9),
+                        context: context,
+                        pageBuilder: (a, b, c) => SizedBox.expand(
+                          child: UserLoadingPage('Adding your new task ...'),
+                        ),
                       );
+                      await updateTask(task);
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();
                     }
                   } else {
                     showSnackBar(_scaffoldKey,
@@ -260,7 +275,8 @@ class _UpdateTaskWidgetState extends State<UpdateTaskWidget> {
               FlatButton(
                 child: Text(
                   'Delete this task',
-                  style: ThemeProvider.themeOf(context).data.textTheme.headline4,
+                  style:
+                      ThemeProvider.themeOf(context).data.textTheme.headline4,
                 ),
                 onPressed: () {
                   showDialog(
@@ -285,10 +301,11 @@ class _UpdateTaskWidgetState extends State<UpdateTaskWidget> {
                                 .textTheme
                                 .headline4
                                 .fontFamily,
-                            color: ThemeProvider.controllerOf(context).theme.id ==
-                                    'light_theme'
-                                ? Colors.black
-                                : Colors.white,
+                            color:
+                                ThemeProvider.controllerOf(context).theme.id ==
+                                        'light_theme'
+                                    ? Colors.black
+                                    : Colors.white,
                           ),
                         ),
                         actions: [
@@ -302,64 +319,76 @@ class _UpdateTaskWidgetState extends State<UpdateTaskWidget> {
                           ),
                           FlatButton(
                             onPressed: () async {
-                              return FutureBuilder(
-                                future: _global.database.delete(
-                                  'tasks',
-                                  where: "id = ?",
-                                  whereArgs: [task.id],
+                              showGeneralDialog(
+                                barrierDismissible: false,
+                                transitionDuration: Duration(milliseconds: 1),
+                                context: context,
+                                pageBuilder: (a, b, c) => SizedBox.expand(
+                                  child: UserLoadingPage(
+                                      'Deleting your task ...'),
                                 ),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState == ConnectionState.done) {
-                                    _global.toDoList.removeWhere((element) {
-                                      return element.id == task.id;
-                                    });
-                                    return WillPopScope(
-                                      onWillPop: () => Future.value(false),
-                                      child: AlertDialog(
-                                        title: Text(
-                                          'Task has been deleted!',
-                                          style: TextStyle(
-                                            fontSize: ThemeProvider.themeOf(context)
-                                                .data
-                                                .textTheme
-                                                .headline4
-                                                .fontSize,
-                                            fontWeight: ThemeProvider.themeOf(context)
+                              );
+                              await _global.database.delete(
+                                'tasks',
+                                where: "id = ?",
+                                whereArgs: [task.id],
+                              );
+                              await Future.delayed(Duration(seconds: 3));
+                              _global.toDoList.removeWhere((element) {
+                                return element.id == task.id;
+                              });
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                              showDialog(
+                                context: context,
+                                builder: (context) => WillPopScope(
+                                  onWillPop: () => Future.value(false),
+                                  child: AlertDialog(
+                                    title: Text(
+                                      'Task has been deleted!',
+                                      style: TextStyle(
+                                        fontSize: ThemeProvider.themeOf(context)
+                                            .data
+                                            .textTheme
+                                            .headline4
+                                            .fontSize,
+                                        fontWeight:
+                                            ThemeProvider.themeOf(context)
                                                 .data
                                                 .textTheme
                                                 .headline4
                                                 .fontWeight,
-                                            fontFamily: ThemeProvider.themeOf(context)
+                                        fontFamily:
+                                            ThemeProvider.themeOf(context)
                                                 .data
                                                 .textTheme
                                                 .headline4
                                                 .fontFamily,
-                                            color: ThemeProvider.controllerOf(context).theme.id ==
-                                                'light_theme'
+                                        color:
+                                            ThemeProvider.controllerOf(context)
+                                                        .theme
+                                                        .id ==
+                                                    'light_theme'
                                                 ? Colors.black
                                                 : Colors.white,
-                                          ),
-                                        ),
-                                        actions: [
-                                          FlatButton(
-                                            child: Text(
-                                              'OK',
-                                            ),
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                              Navigator.of(context).pop();
-                                              if (mounted) {
-                                                setState(() {});
-                                              }
-                                            },
-                                          ),
-                                        ],
                                       ),
-                                    );
-                                  } else {
-                                    return UserLoadingPage('Deleting the task ...');
-                                  }
-                                },
+                                    ),
+                                    actions: [
+                                      FlatButton(
+                                        child: Text(
+                                          'OK',
+                                        ),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                          Navigator.of(context).pop();
+                                          if (mounted) {
+                                            setState(() {});
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               );
                             },
                             child: Text(

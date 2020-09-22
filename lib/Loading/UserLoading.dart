@@ -22,11 +22,9 @@ class _UserLoadingPageState extends State<UserLoadingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Card(
-          child: FadingText(
-            title,
-            style: ThemeProvider.themeOf(context).data.textTheme.headline5,
-          ),
+        child: FadingText(
+          title,
+          style: ThemeProvider.themeOf(context).data.textTheme.headline3,
         ),
       ),
     );
