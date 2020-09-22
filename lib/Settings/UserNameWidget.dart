@@ -7,14 +7,11 @@ import 'package:to_do_list_app/Loading/UserLoading.dart';
 import 'package:to_do_list_app/User/User.dart';
 
 class UserNameWidget extends StatefulWidget {
-
   @override
   _UserNameWidgetState createState() => _UserNameWidgetState();
-
 }
 
 class _UserNameWidgetState extends State<UserNameWidget> {
-
   final GlobalKey<FormFieldState> nameKey = GlobalKey<FormFieldState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -37,7 +34,24 @@ class _UserNameWidgetState extends State<UserNameWidget> {
         appBar: AppBar(
           title: Text(
             'Your profile',
-            style: ThemeProvider.themeOf(context).data.textTheme.headline5,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: ThemeProvider.themeOf(context)
+                  .data
+                  .textTheme
+                  .headline5
+                  .fontSize,
+              fontWeight: ThemeProvider.themeOf(context)
+                  .data
+                  .textTheme
+                  .headline5
+                  .fontWeight,
+              fontFamily: ThemeProvider.themeOf(context)
+                  .data
+                  .textTheme
+                  .headline5
+                  .fontFamily,
+            ),
           ),
           centerTitle: true,
         ),
@@ -47,7 +61,10 @@ class _UserNameWidgetState extends State<UserNameWidget> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Padding(
-                padding: EdgeInsets.only(top: MediaQuery.of(context).size.height / 3, right: 10, left: 10),
+                padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).size.height / 3,
+                    right: 10,
+                    left: 10),
                 child: Container(
                   decoration: BoxDecoration(
                     border: Border.all(
@@ -58,7 +75,8 @@ class _UserNameWidgetState extends State<UserNameWidget> {
                   ),
                   child: TextFormField(
                     initialValue: _global.userName ?? "",
-                    style: ThemeProvider.themeOf(context).data.textTheme.subtitle2,
+                    style:
+                        ThemeProvider.themeOf(context).data.textTheme.subtitle2,
                     cursorColor: Colors.black,
                     key: nameKey,
                     decoration: InputDecoration(
@@ -84,7 +102,8 @@ class _UserNameWidgetState extends State<UserNameWidget> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(top: MediaQuery.of(context).size.height / 3),
+                padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).size.height / 3),
                 child: RaisedButton(
                   color: Colors.deepPurpleAccent,
                   shape: RoundedRectangleBorder(
@@ -93,19 +112,23 @@ class _UserNameWidgetState extends State<UserNameWidget> {
                   padding: EdgeInsets.all(15),
                   child: Text(
                     'Change your profile name',
-                    style: ThemeProvider.themeOf(context).data.textTheme.headline2,
+                    style:
+                        ThemeProvider.themeOf(context).data.textTheme.headline2,
                   ),
                   onPressed: () async {
                     if (nameKey.currentState.validate()) {
-                      FutureBuilder(
-                        future: updateName(User(_global.userID, name)),
-                        builder: (context, snapshot) {
-                          if (!snapshot.hasData) {
-                            return UserLoadingPage('Updating user name ...');
-                          }
-                          return this.build(context);
-                        },
+                      showGeneralDialog(
+                        barrierDismissible: false,
+                        transitionDuration: Duration(milliseconds: 1),
+                        barrierColor: Colors.black12.withOpacity(0.9),
+                        context: context,
+                        pageBuilder: (a, b, c) => SizedBox.expand(
+                          child: UserLoadingPage('Updating your name ...'),
+                        ),
                       );
+                      await updateName(User(_global.userID, name));
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();
                     } else {
                       errorSnackBar(_scaffoldKey);
                     }
@@ -152,7 +175,11 @@ class _UserNameWidgetState extends State<UserNameWidget> {
       whereArgs: [user.id],
     );
     _global.userName = user.name;
-    print(" @@@@@@@ user id: " + user.id.toString() + " @@ name: " + user.name + " @@\n");
+    print(" @@@@@@@ user id: " +
+        user.id.toString() +
+        " @@ name: " +
+        user.name +
+        " @@\n");
     return user;
   }
 }

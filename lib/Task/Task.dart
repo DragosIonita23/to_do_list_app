@@ -9,7 +9,6 @@ class Task {
 
   Task(this.id, this.title, this.description, this.category, this.done);
 
-  // TO DO SQLITE: TOMAP and FROMMAP
   Map<String, dynamic> toMap() {
     return {
       'id': id,

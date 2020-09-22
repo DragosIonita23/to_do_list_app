@@ -36,6 +36,7 @@ class _CreateUserNamePageState extends State<CreateUserNamePage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        resizeToAvoidBottomPadding: false,
         key: _scaffoldKey,
         appBar: AppBar(
           centerTitle: true,
@@ -106,8 +107,10 @@ class _CreateUserNamePageState extends State<CreateUserNamePage> {
                       prefixIcon: Icon(Icons.person),
                       border: InputBorder.none,
                       labelText: 'What\'s your name?',
-                      labelStyle:
-                          ThemeProvider.themeOf(context).data.textTheme.headline1,
+                      labelStyle: ThemeProvider.themeOf(context)
+                          .data
+                          .textTheme
+                          .headline1,
                     ),
                     validator: (String value) {
                       if (_global.nameValidator.hasMatch(value) &&
@@ -137,20 +140,28 @@ class _CreateUserNamePageState extends State<CreateUserNamePage> {
           child: FlatButton(
             child: Text(
               'Create User Name',
-              style:
-              ThemeProvider.themeOf(context).data.textTheme.headline2,
+              style: ThemeProvider.themeOf(context).data.textTheme.headline2,
             ),
             onPressed: () async {
               if (userNameKey.currentState.validate()) {
-                FutureBuilder(
-                  future: createUser(User(_global.userID, userName)),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return UserLoadingPage('Creating user name ...');
-                    }
-                    _global.userName = userName;
-                    return ToDoListWidget();
-                  },
+                showGeneralDialog(
+                  barrierDismissible: false,
+                  transitionDuration: Duration(milliseconds: 1),
+                  barrierColor: Colors.black12.withOpacity(0.9),
+                  context: context,
+                  pageBuilder: (a, b, c) => SizedBox.expand(
+                    child: UserLoadingPage('Creating user ...'),
+                  ),
+                );
+                await createUser(User(_global.userID, userName));
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return ThemeConsumer(
+                        child: ToDoListWidget(),
+                      );
+                    },
+                  ),
                 );
               } else {
                 showSnackBar(_scaffoldKey, 'Username must be validated');

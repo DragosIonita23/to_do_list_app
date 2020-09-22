@@ -22,77 +22,79 @@ class _TaskWidgetState extends State<TaskWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Card(
-            child: ListTile(
-              title: Text(
-                'Title',
-                style: ThemeProvider.themeOf(context).data.textTheme.headline3,
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(),
+        body: ListView(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: Text(
+                        'Title',
+                        style: ThemeProvider.themeOf(context).data.textTheme.headline3,
+                      ),
+                    ),
+                    ListTile(
+                      title: Text(
+                        task.title,
+                        style: ThemeProvider.themeOf(context).data.textTheme.headline2,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Card(
-            child: ListTile(
-              title: Text(
-                task.title,
-                style: ThemeProvider.themeOf(context).data.textTheme.headline2,
+            Divider(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: Text(
+                        'Category',
+                        style: ThemeProvider.themeOf(context).data.textTheme.headline3,
+                      ),
+                    ),
+                    ListTile(
+                      title: Text(
+                        task.category,
+                        style: ThemeProvider.themeOf(context).data.textTheme.headline2,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ),
-        Divider(),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Card(
-            child: ListTile(
-              title: Text(
-                'Category',
-                style: ThemeProvider.themeOf(context).data.textTheme.headline3,
+            Divider(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: Text(
+                        'Description',
+                        style: ThemeProvider.themeOf(context).data.textTheme.headline3,
+                      ),
+                    ),
+                    ListTile(
+                      title: Text(
+                        task.description,
+                        style: ThemeProvider.themeOf(context).data.textTheme.headline2,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
+          ],
         ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Card(
-            child: ListTile(
-              title: Text(
-                task.category,
-                style: ThemeProvider.themeOf(context).data.textTheme.headline2,
-              ),
-            ),
-          ),
-        ),
-        Divider(),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Card(
-            child: ListTile(
-              title: Text(
-                'Description',
-                style: ThemeProvider.themeOf(context).data.textTheme.headline3,
-              ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Card(
-            child: ListTile(
-              title: Text(
-                task.description,
-                style: ThemeProvider.themeOf(context).data.textTheme.headline2,
-              ),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 

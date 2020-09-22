@@ -8,12 +8,20 @@ import 'package:to_do_list_app/Settings/SettingsPage.dart';
 import 'package:to_do_list_app/ToDoList/ToDoListWidget.dart';
 
 class DrawerWidget extends StatefulWidget {
+  final toDoListPageState;
+
+  const DrawerWidget(this.toDoListPageState, {Key key}) : super(key: key);
+
   @override
-  _DrawerWidgetState createState() => _DrawerWidgetState();
+  _DrawerWidgetState createState() => _DrawerWidgetState(toDoListPageState);
 }
 
 class _DrawerWidgetState extends State<DrawerWidget> {
   Global _global = Global.getInstance();
+
+  var toDoListPageState;
+
+  _DrawerWidgetState(this.toDoListPageState);
 
   @override
   Widget build(BuildContext context) {
@@ -78,18 +86,22 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               Icons.delete_sweep,
             ),
             onTap: () async {
-              return FutureBuilder(
-                future: _global.deleteAllTasks(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return ThemeConsumer(
-                      child: ToDoListWidget(),
-                    );
-                  } else {
-                    return UserLoadingPage('Deleting all tasks ...');
-                  }
-                },
+              showGeneralDialog(
+                barrierDismissible: false,
+                transitionDuration: Duration(milliseconds: 1),
+                barrierColor: Colors.black12.withOpacity(0.9),
+                context: context,
+                pageBuilder: (a, b, c) => SizedBox.expand(
+                  child: UserLoadingPage('Deleting all yours tasks ...'),
+                ),
               );
+              await _global.deleteAllTasks();
+              Navigator.of(context).pop();
+              if (mounted) {
+                setState(() {
+                  toDoListPageState.setState(() {});
+                });
+              }
             },
           ),
         ],

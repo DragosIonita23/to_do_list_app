@@ -32,11 +32,29 @@ class _AddTaskPageState extends State<AddTaskPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        resizeToAvoidBottomPadding: false,
         key: _scaffoldKey,
         appBar: AppBar(
           title: Text(
             'Add a new task',
-            style: ThemeProvider.themeOf(context).data.textTheme.headline5,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: ThemeProvider.themeOf(context)
+                  .data
+                  .textTheme
+                  .headline5
+                  .fontSize,
+              fontWeight: ThemeProvider.themeOf(context)
+                  .data
+                  .textTheme
+                  .headline5
+                  .fontWeight,
+              fontFamily: ThemeProvider.themeOf(context)
+                  .data
+                  .textTheme
+                  .headline5
+                  .fontFamily,
+            ),
           ),
           centerTitle: true,
         ),
@@ -57,18 +75,24 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   child: TextFormField(
                     initialValue: "",
                     style:
-                    ThemeProvider.themeOf(context).data.textTheme.headline2,
-                    cursorColor: Colors.black,
+                        ThemeProvider.themeOf(context).data.textTheme.headline1,
+                    cursorColor: ThemeProvider.themeOf(context).id == 'light_theme' ? Colors.black : Colors.white,
                     key: titleKey,
                     decoration: InputDecoration(
                       prefixIcon: Icon(
                         Icons.text_fields,
-                        color: Colors.black,
+                        color:
+                            ThemeProvider.themeOf(context).id == 'light_theme'
+                                ? Colors.black
+                                : Colors.white,
                       ),
                       border: InputBorder.none,
                       labelText: 'Task title',
                       labelStyle: TextStyle(
-                        color: Colors.black,
+                        color:
+                            ThemeProvider.themeOf(context).id == 'light_theme'
+                                ? Colors.black
+                                : Colors.white,
                       ),
                     ),
                     validator: (String value) {
@@ -103,18 +127,24 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   child: TextFormField(
                     initialValue: "",
                     style:
-                    ThemeProvider.themeOf(context).data.textTheme.headline2,
-                    cursorColor: Colors.black,
+                        ThemeProvider.themeOf(context).data.textTheme.headline1,
+                    cursorColor: ThemeProvider.themeOf(context).id == 'light_theme' ? Colors.black : Colors.white,
                     key: descriptionKey,
                     decoration: InputDecoration(
                       prefixIcon: Icon(
                         Icons.description,
-                        color: Colors.black,
+                        color:
+                            ThemeProvider.themeOf(context).id == 'light_theme'
+                                ? Colors.black
+                                : Colors.white,
                       ),
                       border: InputBorder.none,
                       labelText: 'Description of the task',
                       labelStyle: TextStyle(
-                        color: Colors.black,
+                        color:
+                            ThemeProvider.themeOf(context).id == 'light_theme'
+                                ? Colors.black
+                                : Colors.white,
                       ),
                     ),
                     validator: (String value) {
@@ -142,7 +172,10 @@ class _AddTaskPageState extends State<AddTaskPage> {
                     child: Text(
                       'Choose category:',
                       style: TextStyle(
-                        color: Colors.black,
+                        color:
+                            ThemeProvider.themeOf(context).id == 'light_theme'
+                                ? Colors.black
+                                : Colors.white,
                         fontFamily: ThemeProvider.themeOf(context)
                             .data
                             .textTheme
@@ -174,7 +207,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                         'Normal',
                         style: TextStyle(
                           color: ThemeProvider.controllerOf(context).theme.id ==
-                              'light_theme'
+                                  'light_theme'
                               ? Colors.black
                               : Colors.white,
                           fontSize: ThemeProvider.themeOf(context)
@@ -201,14 +234,16 @@ class _AddTaskPageState extends State<AddTaskPage> {
                       },
                       color: category == 'Normal'
                           ? Colors.deepPurpleAccent
-                          : Colors.white,
+                          : ThemeProvider.themeOf(context).id == 'light_theme'
+                              ? Colors.white
+                              : Colors.black,
                     ),
                     RaisedButton(
                       child: Text(
                         'Important',
                         style: TextStyle(
                           color: ThemeProvider.controllerOf(context).theme.id ==
-                              'light_theme'
+                                  'light_theme'
                               ? Colors.black
                               : Colors.white,
                           fontSize: ThemeProvider.themeOf(context)
@@ -235,7 +270,9 @@ class _AddTaskPageState extends State<AddTaskPage> {
                       },
                       color: category == 'Important'
                           ? Colors.deepPurpleAccent
-                          : Colors.white,
+                          : ThemeProvider.themeOf(context).id == 'light_theme'
+                              ? Colors.white
+                              : Colors.black,
                     ),
                   ],
                 ),
@@ -256,8 +293,8 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 if (category == "") {
                   showSnackBar(_scaffoldKey, 'Choose a category');
                 } else {
-                  // TO DO SQLITE INSERT ROW IN TASKS TABLE
                   var index = _global.lastIndex + 1;
+                  print("new task index = " + index.toString() + "@@@@\n");
                   showGeneralDialog(
                     barrierDismissible: false,
                     transitionDuration: Duration(milliseconds: 1),
@@ -268,10 +305,13 @@ class _AddTaskPageState extends State<AddTaskPage> {
                     ),
                   );
                   await insertTask(
-                      Task(index, title, description, category, 0));
+                    Task(index, title, description, category, 0),
+                  );
                   _global.toDoList.add(
                     Task(index, title, description, category, 0),
                   );
+                  _global.lastIndex =
+                      _global.getLastIndexFromList(_global.toDoList);
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
                 }

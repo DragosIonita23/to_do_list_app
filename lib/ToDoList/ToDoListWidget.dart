@@ -37,8 +37,9 @@ class _ToDoListWidgetState extends State<ToDoListWidget> {
     });
     return SafeArea(
       child: Scaffold(
+        resizeToAvoidBottomPadding: false,
         key: _scaffoldKey,
-        drawer: DrawerWidget(),
+        drawer: DrawerWidget(this),
         appBar: AppBar(
           centerTitle: true,
           title: Text(
@@ -58,35 +59,28 @@ class _ToDoListWidgetState extends State<ToDoListWidget> {
             return Padding(
               padding: EdgeInsets.all(8),
               child: Card(
+                color: ThemeProvider.controllerOf(context).theme.id ==
+                    'light_theme'
+                    ? (filteredList[i].done == 1
+                    ? Colors.white24
+                    : Colors.white)
+                    : (filteredList[i].done == 1 ? Colors.deepOrangeAccent : Colors.black),
                 child: CheckboxListTile(
+                  activeColor: Colors.deepPurpleAccent,
                   value: filteredList[i].done == 1 ? true : false,
                   onChanged: (value) async {
-                    return FutureBuilder(
-                      future: _global.database.update(
-                        'tasks',
-                        filteredList[i].toMap(),
-                        where: "id = ?",
-                        whereArgs: [filteredList[i].id],
-                      ),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.done) {
-                          return this.build(context);
-                        } else {
-                          return ((filteredList[i].done == 1)
-                              ? UserLoadingPage('Marking the task as done...')
-                              : UserLoadingPage(
-                                  'Marking the task as \'to do\'...'));
-                        }
-                      },
+                    filteredList[i].done = (value) ? 1 : 0;
+                    await _global.database.update(
+                      'tasks',
+                      filteredList[i].toMap(),
+                      where: "id = ?",
+                      whereArgs: [filteredList[i].id],
                     );
+                    if(mounted) {
+                      setState(() {});
+                    }
                   },
                   title: Container(
-                    color: ThemeProvider.controllerOf(context).theme.id ==
-                            'light_theme'
-                        ? (filteredList[i].done == 1
-                            ? Colors.white24
-                            : Colors.white)
-                        : (filteredList[i].done == 1 ? Colors.red : Colors.black),
                     child: ListTile(
                       title: Text(
                         filteredList[i].title,
@@ -156,7 +150,9 @@ class _ToDoListWidgetState extends State<ToDoListWidget> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Card(
-                  shadowColor: categoryString == 'Normal' ? Colors.deepPurpleAccent : Colors.transparent,
+                  color: ThemeProvider.themeOf(context).id == 'light_theme'
+                      ? (categoryString == 'Normal' ? Colors.deepPurpleAccent : Colors.white) : (categoryString == 'Normal' ? Colors.deepPurpleAccent : Colors.black),
+                  shadowColor: categoryString == 'Normal' ? (ThemeProvider.themeOf(context).id == 'light_theme' ? Colors.deepPurpleAccent : Colors.white) : Colors.transparent,
                   borderOnForeground: false,
                   child: FlatButton(
                     child: Text(
@@ -210,7 +206,9 @@ class _ToDoListWidgetState extends State<ToDoListWidget> {
                 ),
                 Card(
                   borderOnForeground: false,
-                  shadowColor: categoryString == 'Important' ? Colors.deepPurpleAccent : Colors.transparent,
+                  color: ThemeProvider.themeOf(context).id == 'light_theme'
+                    ? (categoryString == 'Important' ? Colors.deepPurpleAccent : Colors.white) : (categoryString == 'Important' ? Colors.deepPurpleAccent : Colors.black),
+                  shadowColor: categoryString == 'Important' ? (ThemeProvider.themeOf(context).id == 'light_theme' ? Colors.deepPurpleAccent : Colors.white) : Colors.transparent,
                   child: FlatButton(
                     child: Text(
                       'Important',
@@ -264,7 +262,7 @@ class _ToDoListWidgetState extends State<ToDoListWidget> {
                 IconButton(
                   icon: Icon(Icons.add_circle_outline),
                   iconSize: 42,
-                  color: Colors.deepPurpleAccent,
+                  color: ThemeProvider.themeOf(context).id == 'light_theme' ? Colors.deepPurpleAccent : Colors.white,
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
