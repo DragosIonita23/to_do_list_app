@@ -37,184 +37,336 @@ class _UpdateTaskWidgetState extends State<UpdateTaskWidget> {
     // update task widget
     // text form fields ca la addtask page, doar ca
     // difera metoda de final.
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        title: Text(
-          'Update this task',
-          style: ThemeProvider.themeOf(context).data.textTheme.headline5,
+    return SafeArea(
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          title: Text(
+            'Update this task',
+            style: ThemeProvider.themeOf(context).data.textTheme.headline5,
+          ),
+          centerTitle: true,
         ),
-        centerTitle: true,
-      ),
-      body: Container(
-        child: Center(
-          child: Column(
+        body: Container(
+          child: Center(
+            child: Column(
+              children: [
+                Padding(
+                  // title
+                  padding: EdgeInsets.all(20),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: ThemeProvider.themeOf(context).id == 'light_theme'
+                            ? Colors.black
+                            : Colors.white54,
+                      ),
+                    ),
+                    child: TextFormField(
+                      initialValue: task.title,
+                      style:
+                          ThemeProvider.themeOf(context).data.textTheme.subtitle2,
+                      cursorColor: Colors.black,
+                      key: titleKey,
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.person),
+                        border: InputBorder.none,
+                        labelText: 'Task title',
+                      ),
+                      validator: (String value) {
+                        if (_global.nameValidator.hasMatch(value) &&
+                            value.isNotEmpty &&
+                            value.length <= 25) {
+                          task.title = value;
+                          return null;
+                        } else {
+                          return 'Invalid Title\n.Maximum 80 alpha-numeric characters allowed.';
+                        }
+                      },
+                      onFieldSubmitted: (String value) {
+                        if (titleKey.currentState.validate()) {
+                          task.title = value;
+                        }
+                      },
+                    ),
+                  ),
+                ),
+                Padding(
+                  // description
+                  padding: EdgeInsets.all(20),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: ThemeProvider.themeOf(context).id == 'light_theme'
+                            ? Colors.black
+                            : Colors.white54,
+                      ),
+                    ),
+                    child: TextFormField(
+                      initialValue: task.description.substring(0, 20) + "...",
+                      style:
+                          ThemeProvider.themeOf(context).data.textTheme.subtitle2,
+                      cursorColor: Colors.black,
+                      key: descriptionKey,
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.person),
+                        border: InputBorder.none,
+                        labelText: 'Description of the task',
+                      ),
+                      validator: (String value) {
+                        if (_global.nameValidator.hasMatch(value) &&
+                            value.isNotEmpty &&
+                            value.length <= 80) {
+                          task.description = value;
+                          return null;
+                        } else {
+                          return 'Invalid description.\nMaximum 80 alpha-numeric characters allowed.';
+                        }
+                      },
+                      onFieldSubmitted: (String value) {
+                        if (descriptionKey.currentState.validate()) {
+                          task.description = value;
+                        }
+                      },
+                    ),
+                  ),
+                ),
+                FlatButton(
+                  child: Text(
+                    'Show categories',
+                    style:
+                        ThemeProvider.themeOf(context).data.textTheme.headline4,
+                  ),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          content: Container(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                FlatButton(
+                                  child: Text(
+                                    'Normal',
+                                    style: TextStyle(
+                                      color: ThemeProvider.controllerOf(context)
+                                                  .theme
+                                                  .id ==
+                                              'light_theme'
+                                          ? Colors.black
+                                          : Colors.white,
+                                      fontSize: ThemeProvider.themeOf(context)
+                                          .data
+                                          .textTheme
+                                          .headline3
+                                          .fontSize,
+                                      fontFamily: ThemeProvider.themeOf(context)
+                                          .data
+                                          .textTheme
+                                          .headline3
+                                          .fontFamily,
+                                      fontWeight: ThemeProvider.themeOf(context)
+                                          .data
+                                          .textTheme
+                                          .headline3
+                                          .fontWeight,
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      task.category = 'Normal';
+                                    });
+                                  },
+                                ),
+                                FlatButton(
+                                  child: Text(
+                                    'Important',
+                                    style: TextStyle(
+                                      color: ThemeProvider.controllerOf(context)
+                                                  .theme
+                                                  .id ==
+                                              'light_theme'
+                                          ? Colors.black
+                                          : Colors.white,
+                                      fontSize: ThemeProvider.themeOf(context)
+                                          .data
+                                          .textTheme
+                                          .headline3
+                                          .fontSize,
+                                      fontFamily: ThemeProvider.themeOf(context)
+                                          .data
+                                          .textTheme
+                                          .headline3
+                                          .fontFamily,
+                                      fontWeight: ThemeProvider.themeOf(context)
+                                          .data
+                                          .textTheme
+                                          .headline3
+                                          .fontWeight,
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      task.category = 'Important';
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+        bottomNavigationBar: BottomAppBar(
+          child: Row(
             children: [
-              Padding(
-                // title
-                padding: EdgeInsets.all(20),
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: ThemeProvider.themeOf(context).id == 'light_theme'
-                          ? Colors.black
-                          : Colors.white54,
-                    ),
-                  ),
-                  child: TextFormField(
-                    initialValue: task.title,
-                    style:
-                        ThemeProvider.themeOf(context).data.textTheme.subtitle2,
-                    cursorColor: Colors.black,
-                    key: titleKey,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.person),
-                      border: InputBorder.none,
-                      labelText: 'Task title',
-                    ),
-                    validator: (String value) {
-                      if (_global.nameValidator.hasMatch(value) &&
-                          value.isNotEmpty &&
-                          value.length <= 25) {
-                        task.title = value;
-                        return null;
-                      } else {
-                        return 'Invalid Title\n.Maximum 80 alpha-numeric characters allowed.';
-                      }
-                    },
-                    onFieldSubmitted: (String value) {
-                      if (titleKey.currentState.validate()) {
-                        task.title = value;
-                      }
-                    },
-                  ),
+              FlatButton(
+                child: Text(
+                  'Update this task',
+                  style: ThemeProvider.themeOf(context).data.textTheme.headline4,
                 ),
-              ),
-              Padding(
-                // description
-                padding: EdgeInsets.all(20),
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: ThemeProvider.themeOf(context).id == 'light_theme'
-                          ? Colors.black
-                          : Colors.white54,
-                    ),
-                  ),
-                  child: TextFormField(
-                    initialValue: task.description.substring(0, 20) + "...",
-                    style:
-                        ThemeProvider.themeOf(context).data.textTheme.subtitle2,
-                    cursorColor: Colors.black,
-                    key: descriptionKey,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.person),
-                      border: InputBorder.none,
-                      labelText: 'Description of the task',
-                    ),
-                    validator: (String value) {
-                      if (_global.nameValidator.hasMatch(value) &&
-                          value.isNotEmpty &&
-                          value.length <= 80) {
-                        task.description = value;
-                        return null;
-                      } else {
-                        return 'Invalid description.\nMaximum 80 alpha-numeric characters allowed.';
-                      }
-                    },
-                    onFieldSubmitted: (String value) {
-                      if (descriptionKey.currentState.validate()) {
-                        task.description = value;
-                      }
-                    },
-                  ),
-                ),
+                onPressed: () {
+                  if (titleKey.currentState.validate() &&
+                      descriptionKey.currentState.validate()) {
+                    if (task.category == "") {
+                      showSnackBar(
+                          _scaffoldKey, 'Please choose a category for your task');
+                    } else {
+                      // updates the database and the local list in global
+                      return FutureBuilder(
+                        future: updateTask(task),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return UserLoadingPage('Updating your task ...');
+                          }
+                          return this.build(context);
+                        },
+                      );
+                    }
+                  } else {
+                    showSnackBar(_scaffoldKey,
+                        'The title and the description must be validated.');
+                  }
+                },
               ),
               FlatButton(
                 child: Text(
-                  'Show categories',
-                  style:
-                      ThemeProvider.themeOf(context).data.textTheme.headline4,
+                  'Delete this task',
+                  style: ThemeProvider.themeOf(context).data.textTheme.headline4,
                 ),
                 onPressed: () {
                   showDialog(
                     context: context,
                     builder: (context) {
                       return AlertDialog(
-                        content: Container(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              FlatButton(
-                                child: Text(
-                                  'Normal',
-                                  style: TextStyle(
-                                    color: ThemeProvider.controllerOf(context)
-                                                .theme
-                                                .id ==
-                                            'light_theme'
-                                        ? Colors.black
-                                        : Colors.white,
-                                    fontSize: ThemeProvider.themeOf(context)
-                                        .data
-                                        .textTheme
-                                        .headline3
-                                        .fontSize,
-                                    fontFamily: ThemeProvider.themeOf(context)
-                                        .data
-                                        .textTheme
-                                        .headline3
-                                        .fontFamily,
-                                    fontWeight: ThemeProvider.themeOf(context)
-                                        .data
-                                        .textTheme
-                                        .headline3
-                                        .fontWeight,
-                                  ),
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    task.category = 'Normal';
-                                  });
-                                },
-                              ),
-                              FlatButton(
-                                child: Text(
-                                  'Important',
-                                  style: TextStyle(
-                                    color: ThemeProvider.controllerOf(context)
-                                                .theme
-                                                .id ==
-                                            'light_theme'
-                                        ? Colors.black
-                                        : Colors.white,
-                                    fontSize: ThemeProvider.themeOf(context)
-                                        .data
-                                        .textTheme
-                                        .headline3
-                                        .fontSize,
-                                    fontFamily: ThemeProvider.themeOf(context)
-                                        .data
-                                        .textTheme
-                                        .headline3
-                                        .fontFamily,
-                                    fontWeight: ThemeProvider.themeOf(context)
-                                        .data
-                                        .textTheme
-                                        .headline3
-                                        .fontWeight,
-                                  ),
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    task.category = 'Important';
-                                  });
-                                },
-                              ),
-                            ],
+                        title: Text(
+                          'Are you sure you want to DELETE this task?',
+                          style: TextStyle(
+                            fontSize: ThemeProvider.themeOf(context)
+                                .data
+                                .textTheme
+                                .headline4
+                                .fontSize,
+                            fontWeight: ThemeProvider.themeOf(context)
+                                .data
+                                .textTheme
+                                .headline4
+                                .fontWeight,
+                            fontFamily: ThemeProvider.themeOf(context)
+                                .data
+                                .textTheme
+                                .headline4
+                                .fontFamily,
+                            color: ThemeProvider.controllerOf(context).theme.id ==
+                                    'light_theme'
+                                ? Colors.black
+                                : Colors.white,
                           ),
                         ),
+                        actions: [
+                          FlatButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text(
+                              'Cancel',
+                            ),
+                          ),
+                          FlatButton(
+                            onPressed: () async {
+                              return FutureBuilder(
+                                future: _global.database.delete(
+                                  'tasks',
+                                  where: "id = ?",
+                                  whereArgs: [task.id],
+                                ),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.done) {
+                                    _global.toDoList.removeWhere((element) {
+                                      return element.id == task.id;
+                                    });
+                                    return WillPopScope(
+                                      onWillPop: () => Future.value(false),
+                                      child: AlertDialog(
+                                        title: Text(
+                                          'Task has been deleted!',
+                                          style: TextStyle(
+                                            fontSize: ThemeProvider.themeOf(context)
+                                                .data
+                                                .textTheme
+                                                .headline4
+                                                .fontSize,
+                                            fontWeight: ThemeProvider.themeOf(context)
+                                                .data
+                                                .textTheme
+                                                .headline4
+                                                .fontWeight,
+                                            fontFamily: ThemeProvider.themeOf(context)
+                                                .data
+                                                .textTheme
+                                                .headline4
+                                                .fontFamily,
+                                            color: ThemeProvider.controllerOf(context).theme.id ==
+                                                'light_theme'
+                                                ? Colors.black
+                                                : Colors.white,
+                                          ),
+                                        ),
+                                        actions: [
+                                          FlatButton(
+                                            child: Text(
+                                              'OK',
+                                            ),
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                              Navigator.of(context).pop();
+                                              if (mounted) {
+                                                setState(() {});
+                                              }
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  } else {
+                                    return UserLoadingPage('Deleting the task ...');
+                                  }
+                                },
+                              );
+                            },
+                            child: Text(
+                              'OK',
+                            ),
+                          ),
+                        ],
                       );
                     },
                   );
@@ -222,156 +374,6 @@ class _UpdateTaskWidgetState extends State<UpdateTaskWidget> {
               ),
             ],
           ),
-        ),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
-          children: [
-            FlatButton(
-              child: Text(
-                'Update this task',
-                style: ThemeProvider.themeOf(context).data.textTheme.headline4,
-              ),
-              onPressed: () {
-                if (titleKey.currentState.validate() &&
-                    descriptionKey.currentState.validate()) {
-                  if (task.category == "") {
-                    showSnackBar(
-                        _scaffoldKey, 'Please choose a category for your task');
-                  } else {
-                    // updates the database and the local list in global
-                    return FutureBuilder(
-                      future: updateTask(task),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return UserLoadingPage('Updating your task ...');
-                        }
-                        return this.build(context);
-                      },
-                    );
-                  }
-                } else {
-                  showSnackBar(_scaffoldKey,
-                      'The title and the description must be validated.');
-                }
-              },
-            ),
-            FlatButton(
-              child: Text(
-                'Delete this task',
-                style: ThemeProvider.themeOf(context).data.textTheme.headline4,
-              ),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Text(
-                        'Are you sure you want to DELETE this task?',
-                        style: TextStyle(
-                          fontSize: ThemeProvider.themeOf(context)
-                              .data
-                              .textTheme
-                              .headline4
-                              .fontSize,
-                          fontWeight: ThemeProvider.themeOf(context)
-                              .data
-                              .textTheme
-                              .headline4
-                              .fontWeight,
-                          fontFamily: ThemeProvider.themeOf(context)
-                              .data
-                              .textTheme
-                              .headline4
-                              .fontFamily,
-                          color: ThemeProvider.controllerOf(context).theme.id ==
-                                  'light_theme'
-                              ? Colors.black
-                              : Colors.white,
-                        ),
-                      ),
-                      actions: [
-                        FlatButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text(
-                            'Cancel',
-                          ),
-                        ),
-                        FlatButton(
-                          onPressed: () async {
-                            return FutureBuilder(
-                              future: _global.database.delete(
-                                'tasks',
-                                where: "id = ?",
-                                whereArgs: [task.id],
-                              ),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState == ConnectionState.done) {
-                                  _global.toDoList.removeWhere((element) {
-                                    return element.id == task.id;
-                                  });
-                                  return WillPopScope(
-                                    onWillPop: () => Future.value(false),
-                                    child: AlertDialog(
-                                      title: Text(
-                                        'Task has been deleted!',
-                                        style: TextStyle(
-                                          fontSize: ThemeProvider.themeOf(context)
-                                              .data
-                                              .textTheme
-                                              .headline4
-                                              .fontSize,
-                                          fontWeight: ThemeProvider.themeOf(context)
-                                              .data
-                                              .textTheme
-                                              .headline4
-                                              .fontWeight,
-                                          fontFamily: ThemeProvider.themeOf(context)
-                                              .data
-                                              .textTheme
-                                              .headline4
-                                              .fontFamily,
-                                          color: ThemeProvider.controllerOf(context).theme.id ==
-                                              'light_theme'
-                                              ? Colors.black
-                                              : Colors.white,
-                                        ),
-                                      ),
-                                      actions: [
-                                        FlatButton(
-                                          child: Text(
-                                            'OK',
-                                          ),
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                            Navigator.of(context).pop();
-                                            if (mounted) {
-                                              setState(() {});
-                                            }
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                } else {
-                                  return UserLoadingPage('Deleting the task ...');
-                                }
-                              },
-                            );
-                          },
-                          child: Text(
-                            'OK',
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-            ),
-          ],
         ),
       ),
     );

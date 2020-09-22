@@ -7,11 +7,14 @@ import 'package:to_do_list_app/Loading/UserLoading.dart';
 import 'package:to_do_list_app/User/User.dart';
 
 class UserNameWidget extends StatefulWidget {
+
   @override
   _UserNameWidgetState createState() => _UserNameWidgetState();
+
 }
 
 class _UserNameWidgetState extends State<UserNameWidget> {
+
   final GlobalKey<FormFieldState> nameKey = GlobalKey<FormFieldState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -27,88 +30,91 @@ class _UserNameWidgetState extends State<UserNameWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomPadding: false,
-      key: _scaffoldKey,
-      appBar: AppBar(
-        title: Text(
-          'Your profile',
-          style: ThemeProvider.themeOf(context).data.textTheme.headline5,
+    return SafeArea(
+      child: Scaffold(
+        resizeToAvoidBottomPadding: false,
+        key: _scaffoldKey,
+        appBar: AppBar(
+          title: Text(
+            'Your profile',
+            style: ThemeProvider.themeOf(context).data.textTheme.headline5,
+          ),
+          centerTitle: true,
         ),
-        centerTitle: true,
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Padding(
-            padding: EdgeInsets.all(20),
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: ThemeProvider.themeOf(context).id == 'light_theme'
-                      ? Colors.black
-                      : Colors.white54,
-                ),
-              ),
-              child: TextFormField(
-                initialValue: _global.userName ?? "",
-                style: ThemeProvider.themeOf(context).data.textTheme.subtitle2,
-                cursorColor: Colors.black,
-                key: nameKey,
-                decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.person),
-                  border: InputBorder.none,
-                  labelText: 'User name',
-                ),
-                validator: (String value) {
-                  if (_global.nameValidator.hasMatch(value) &&
-                      value.isNotEmpty) {
-                    name = value;
-                    return null;
-                  } else {
-                    return 'Invalid user name';
-                  }
-                },
-                onFieldSubmitted: (String value) {
-                  if (nameKey.currentState.validate()) {
-                    name = value;
-                  }
-                },
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: RaisedButton(
-              color: Colors.deepPurpleAccent,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              padding: EdgeInsets.all(15),
-              child: Text(
-                'Change your profile name',
-                style: ThemeProvider.themeOf(context).data.textTheme.headline2,
-              ),
-              onPressed: () async {
-                if (nameKey.currentState.validate()) {
-                  FutureBuilder(
-                    future: updateName(User(_global.userID, name)),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) {
-                        return UserLoadingPage('Updating user name ...');
+        body: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top: MediaQuery.of(context).size.height / 3, right: 10, left: 10),
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: ThemeProvider.themeOf(context).id == 'light_theme'
+                          ? Colors.black
+                          : Colors.white54,
+                    ),
+                  ),
+                  child: TextFormField(
+                    initialValue: _global.userName ?? "",
+                    style: ThemeProvider.themeOf(context).data.textTheme.subtitle2,
+                    cursorColor: Colors.black,
+                    key: nameKey,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.person),
+                      border: InputBorder.none,
+                      labelText: 'User name',
+                    ),
+                    validator: (String value) {
+                      if (_global.nameValidator.hasMatch(value) &&
+                          value.isNotEmpty) {
+                        name = value;
+                        return null;
+                      } else {
+                        return 'Invalid user name';
                       }
-                      _global.userName = name;
-                      return this.build(context);
                     },
-                  );
-                } else {
-                  errorSnackBar(_scaffoldKey);
-                }
-              },
-            ),
+                    onFieldSubmitted: (String value) {
+                      if (nameKey.currentState.validate()) {
+                        name = value;
+                      }
+                    },
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: MediaQuery.of(context).size.height / 3),
+                child: RaisedButton(
+                  color: Colors.deepPurpleAccent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: EdgeInsets.all(15),
+                  child: Text(
+                    'Change your profile name',
+                    style: ThemeProvider.themeOf(context).data.textTheme.headline2,
+                  ),
+                  onPressed: () async {
+                    if (nameKey.currentState.validate()) {
+                      FutureBuilder(
+                        future: updateName(User(_global.userID, name)),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return UserLoadingPage('Updating user name ...');
+                          }
+                          return this.build(context);
+                        },
+                      );
+                    } else {
+                      errorSnackBar(_scaffoldKey);
+                    }
+                  },
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -145,7 +151,8 @@ class _UserNameWidgetState extends State<UserNameWidget> {
       where: "id = ?",
       whereArgs: [user.id],
     );
-    print("@@@@@@@ user = " + user.id.toString() + user.name + "\n");
+    _global.userName = user.name;
+    print(" @@@@@@@ user id: " + user.id.toString() + " @@ name: " + user.name + " @@\n");
     return user;
   }
 }

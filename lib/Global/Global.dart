@@ -95,7 +95,7 @@ class Global {
     return max;
   }
 
-  Future<void> deleteAllTasks() async {
+  Future<bool> deleteAllTasks() async {
     for (int i = 0; i < _global.toDoList.length; i++) {
       await _global.database.delete(
         'tasks',
@@ -105,5 +105,6 @@ class Global {
     }
     _global.lastIndex = 0;
     _global.toDoList = List<Task>();
+    return true;
   }
 }

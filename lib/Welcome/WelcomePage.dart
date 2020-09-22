@@ -6,14 +6,11 @@ import 'package:to_do_list_app/Loading/LoadingPage.dart';
 import 'package:to_do_list_app/ToDoList/ToDoListWidget.dart';
 
 class WelcomePage extends StatefulWidget {
-
   @override
   _WelcomePageState createState() => _WelcomePageState();
-
 }
 
 class _WelcomePageState extends State<WelcomePage> {
-
   Global _global;
 
   @override
@@ -28,12 +25,18 @@ class _WelcomePageState extends State<WelcomePage> {
       future: _global.loadData(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return (_global.userName != null && _global.userName != "") ? ThemeConsumer(child: ToDoListWidget(),) : ThemeConsumer(child: CreateUserNamePage(),);
+          return (_global.userName != null && _global.userName != "")
+              ? ThemeConsumer(
+                  child: ToDoListWidget(),
+                )
+              : ThemeConsumer(
+                  //child: CreateUserNamePage(),
+                  child: CreateUserNamePage(),
+                );
         } else {
           return LoadingPage();
         }
       },
     );
   }
-
 }

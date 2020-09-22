@@ -12,7 +12,6 @@ class DrawerWidget extends StatefulWidget {
 }
 
 class _DrawerWidgetState extends State<DrawerWidget> {
-
   Global _global = Global.getInstance();
 
   @override
@@ -23,13 +22,16 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           DrawerHeader(
             child: Center(
               child: Text(
-                'Greetings, ' + (Global.getInstance().userName ?? "Dear user"),
+                'Greetings, ' +
+                    (Global.getInstance().userName == ""
+                        ? "dear user"
+                        : Global.getInstance().userName),
                 style: TextStyle(
                     fontFamily: 'Lobster',
                     fontWeight:
                         Theme.of(context).textTheme.headline6.fontWeight,
                     fontSize: Theme.of(context).textTheme.headline6.fontSize,
-                    color: Theme.of(context).textTheme.headline6.color),
+                    color: Colors.white),
               ),
             ),
             decoration: BoxDecoration(
@@ -39,7 +41,12 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           ListTile(
             title: Text(
               'Settings',
-              style: Theme.of(context).textTheme.headline1,
+              style: TextStyle(
+                fontFamily: Theme.of(context).textTheme.headline1.fontFamily,
+                fontSize: Theme.of(context).textTheme.headline1.fontSize + 3,
+                fontWeight: Theme.of(context).textTheme.headline1.fontWeight,
+                color: Theme.of(context).textTheme.headline1.color,
+              ),
             ),
             leading: Icon(
               Icons.settings,
@@ -51,13 +58,20 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     return ThemeConsumer(child: SettingsPage());
                   },
                 ),
-              );
+              ).then((value) {
+                if(mounted) setState(() {});
+              });
             },
           ),
           ListTile(
             title: Text(
               'Delete all tasks',
-              style: Theme.of(context).textTheme.headline1,
+              style: TextStyle(
+                fontFamily: Theme.of(context).textTheme.headline1.fontFamily,
+                fontSize: Theme.of(context).textTheme.headline1.fontSize + 3,
+                fontWeight: Theme.of(context).textTheme.headline1.fontWeight,
+                color: Theme.of(context).textTheme.headline1.color,
+              ),
             ),
             leading: Icon(
               Icons.delete_sweep,
@@ -66,8 +80,10 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               return FutureBuilder(
                 future: _global.deleteAllTasks(),
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    return ThemeConsumer(child: ToDoListWidget(),);
+                  if (snapshot.hasData) {
+                    return ThemeConsumer(
+                      child: ToDoListWidget(),
+                    );
                   } else {
                     return UserLoadingPage('Deleting all tasks ...');
                   }
