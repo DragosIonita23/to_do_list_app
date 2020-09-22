@@ -14,7 +14,7 @@ class Global {
     return _global;
   }
 
-  RegExp nameValidator = RegExp(r'^[a-zA-ZăĂâÂîÎțȚșȘ]+$');
+  RegExp nameValidator = RegExp(r'^[a-zA-Z\săĂâÂîÎțȚșȘ]+$');
 
   String userName = ""; // load-uit din SQLite sau cerut in loading screen (daca e null)
 

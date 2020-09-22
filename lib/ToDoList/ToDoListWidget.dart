@@ -94,22 +94,22 @@ class _ToDoListWidgetState extends State<ToDoListWidget> {
                           color: ThemeProvider.themeOf(context)
                               .data
                               .textTheme
-                              .headline4
+                              .headline2
                               .color,
                           fontSize: ThemeProvider.themeOf(context)
                               .data
                               .textTheme
-                              .headline4
+                              .headline2
                               .fontSize,
                           fontWeight: ThemeProvider.themeOf(context)
                               .data
                               .textTheme
-                              .headline4
+                              .headline2
                               .fontWeight,
                           fontFamily: ThemeProvider.themeOf(context)
                               .data
                               .textTheme
-                              .headline4
+                              .headline2
                               .fontFamily,
                           decoration: ((filteredList[i].done == 1)
                               ? TextDecoration.lineThrough
@@ -271,10 +271,13 @@ class _ToDoListWidgetState extends State<ToDoListWidget> {
                         builder: (context) {
                           return ThemeConsumer(
                             child: AddTaskPage(),
+                            // BUG SI AICI, PAGINA BLANK WHITE GOALA
                           );
                         },
                       ),
-                    );
+                    ).then((value) {
+                      if(mounted) setState(() {});
+                    });
                   },
                 ),
               ],

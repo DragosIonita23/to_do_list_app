@@ -1,11 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:theme_provider/theme_provider.dart';
 import 'package:to_do_list_app/Global/Global.dart';
 import 'package:to_do_list_app/Loading/UserLoading.dart';
+import 'package:to_do_list_app/ToDoList/ToDoListWidget.dart';
 import 'package:to_do_list_app/User/User.dart';
 
 class CreateUserNamePage extends StatefulWidget {
@@ -33,95 +38,124 @@ class _CreateUserNamePageState extends State<CreateUserNamePage> {
       child: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          backgroundColor: Colors.black,
           centerTitle: true,
           title: Text(
-            'Welcome to your To Do App',
+            'To Do App',
             style: ThemeProvider.themeOf(context).data.textTheme.headline5,
           ),
         ),
-        body: Column(
-          children: [
-            // Container(
-            //   // height: 200,
-            //   // width: 200,
-            //   //color: Colors.deepPurpleAccent,
-            Image.asset(
-              'assets/userNamePage.png',
-              height: 70,
-              width: 70,
-            ),
-            //   // child: FlatButton(
-            //   //   child: Text("SSSSSSSSSSSSSSss"),
-            //   //   onPressed: () {},
-            //   // ),
-            // ),
-            Padding(
-              // title
-              padding: EdgeInsets.all(10),
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: ThemeProvider.themeOf(context).id == 'light_theme'
-                        ? Colors.black
-                        : Colors.white54,
+        body: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Image.asset(
+                'assets/userNamePage.png',
+                fit: BoxFit.fitWidth,
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 25.0),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: FadingText(
+                      'Welcome, ' +
+                          (_global.userName != ""
+                              ? _global.userName
+                              : "dear user"),
+                      style: TextStyle(
+                        fontWeight: ThemeProvider.themeOf(context)
+                            .data
+                            .textTheme
+                            .headline2
+                            .fontWeight,
+                        fontSize: ThemeProvider.themeOf(context)
+                                .data
+                                .textTheme
+                                .headline3
+                                .fontSize +
+                            15,
+                        fontFamily: 'Lobster',
+                        color: ThemeProvider.themeOf(context)
+                            .data
+                            .textTheme
+                            .headline3
+                            .color,
+                      ),
+                    ),
                   ),
-                ),
-                child: TextFormField(
-                  initialValue: _global.userName ?? "",
-                  style:
-                      ThemeProvider.themeOf(context).data.textTheme.headline2,
-                  cursorColor: Colors.black,
-                  key: userNameKey,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.person),
-                    border: InputBorder.none,
-                    labelText: 'What\'s your name?',
-                  ),
-                  validator: (String value) {
-                    if (_global.nameValidator.hasMatch(value) &&
-                        value.isNotEmpty &&
-                        value.length <= 25) {
-                      userName = value;
-                      return null;
-                    } else {
-                      return 'Invalid title\n.Maximum 25 alpha-numeric characters allowed.';
-                    }
-                  },
-                  onFieldSubmitted: (String value) {
-                    if (userNameKey.currentState.validate()) {
-                      userName = value;
-                    }
-                  },
                 ),
               ),
-            ),
-          ],
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 40),
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: ThemeProvider.themeOf(context).id == 'light_theme'
+                          ? Colors.black
+                          : Colors.white54,
+                    ),
+                  ),
+                  child: TextFormField(
+                    initialValue: _global.userName ?? "",
+                    style:
+                        ThemeProvider.themeOf(context).data.textTheme.headline1,
+                    cursorColor: Colors.black,
+                    key: userNameKey,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.person),
+                      border: InputBorder.none,
+                      labelText: 'What\'s your name?',
+                      labelStyle:
+                          ThemeProvider.themeOf(context).data.textTheme.headline1,
+                    ),
+                    validator: (String value) {
+                      if (_global.nameValidator.hasMatch(value) &&
+                          value.isNotEmpty &&
+                          value.length <= 25) {
+                        userName = value;
+                        return null;
+                      } else {
+                        if (value.isNotEmpty)
+                          return 'Maximum 25 alpha-numeric characters allowed.';
+                        return "";
+                      }
+                    },
+                    onFieldSubmitted: (String value) {
+                      if (userNameKey.currentState.validate()) {
+                        userName = value;
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
         bottomNavigationBar: BottomAppBar(
-          child: Center(
-            child: FlatButton(
-              child: Text(
-                'Update User Name',
-                style: ThemeProvider.themeOf(context).data.textTheme.headline4,
-              ),
-              onPressed: () async {
-                if (userNameKey.currentState.validate()) {
-                  FutureBuilder(
-                    future: createUser(User(_global.userID, userName)),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) {
-                        return UserLoadingPage('Creating user name ...');
-                      }
-                      _global.userName = userName;
-                      return this.build(context);
-                    },
-                  );
-                } else {
-                  showSnackBar(_scaffoldKey, 'Username must be validated');
-                }
-              },
+          color: Colors.deepPurpleAccent,
+          child: FlatButton(
+            child: Text(
+              'Create User Name',
+              style:
+              ThemeProvider.themeOf(context).data.textTheme.headline2,
             ),
+            onPressed: () async {
+              if (userNameKey.currentState.validate()) {
+                FutureBuilder(
+                  future: createUser(User(_global.userID, userName)),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return UserLoadingPage('Creating user name ...');
+                    }
+                    _global.userName = userName;
+                    return ToDoListWidget();
+                  },
+                );
+              } else {
+                showSnackBar(_scaffoldKey, 'Username must be validated');
+              }
+            },
           ),
         ),
       ),
