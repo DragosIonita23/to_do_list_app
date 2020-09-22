@@ -36,8 +36,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 .textTheme
                 .headline5
                 .fontSize,
-            color:
-            ThemeProvider.themeOf(context).data.textTheme.headline5.color,
+            color: Colors.white,
           ),
         ),
         centerTitle: true,
@@ -58,9 +57,9 @@ class _SettingsPageState extends State<SettingsPage> {
                         style: ThemeProvider.themeOf(context)
                             .data
                             .textTheme
-                            .headline5,
+                            .headline3,
                       ),
-                      trailing: FlatButton(
+                      trailing: RaisedButton(
                         child: Text(
                           ThemeProvider.themeOf(context).id == 'light_theme'
                               ? 'Dark'
@@ -68,7 +67,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           style: ThemeProvider.themeOf(context)
                               .data
                               .textTheme
-                              .headline4,
+                              .headline2,
                         ),
                         onPressed: () {
                           var themeId = ((ThemeProvider.themeOf(context).id ==

@@ -19,44 +19,22 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: ThemeProvider(
-        saveThemesOnChange: true,
-        loadThemeOnInit: true,
-        themes: [
-          Themes().LightTheme(),
-          Themes().DarkTheme(),
-        ],
-        child: ThemeConsumer(
-          child: Builder(
-            builder: (themeContext) => MaterialApp(
-              theme: ThemeProvider.themeOf(themeContext).data,
-              title: 'To Do Flutter App',
-              home: WelcomePage(),
-            ),
+    return ThemeProvider(
+      saveThemesOnChange: true,
+      loadThemeOnInit: true,
+      themes: [
+        Themes().LightTheme(),
+        Themes().DarkTheme(),
+      ],
+      child: ThemeConsumer(
+        child: Builder(
+          builder: (themeContext) => MaterialApp(
+            theme: ThemeProvider.themeOf(themeContext).data,
+            title: 'To Do Flutter App',
+            home: WelcomePage(),
           ),
         ),
       ),
     );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key}) : super(key: key);
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
   }
 }

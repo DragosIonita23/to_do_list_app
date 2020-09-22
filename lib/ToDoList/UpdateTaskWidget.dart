@@ -5,7 +5,6 @@ import 'package:theme_provider/theme_provider.dart';
 import 'package:to_do_list_app/Global/Global.dart';
 import 'package:to_do_list_app/Loading/UserLoading.dart';
 import 'package:to_do_list_app/Task/Task.dart';
-import 'package:to_do_list_app/ToDoList/ToDoListWidget.dart';
 
 class UpdateTaskWidget extends StatefulWidget {
   final Task task;
@@ -42,7 +41,7 @@ class _UpdateTaskWidgetState extends State<UpdateTaskWidget> {
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text(
-          'Add a new task',
+          'Update this task',
           style: ThemeProvider.themeOf(context).data.textTheme.headline5,
         ),
         centerTitle: true,
@@ -313,45 +312,48 @@ class _UpdateTaskWidgetState extends State<UpdateTaskWidget> {
                                   _global.toDoList.removeWhere((element) {
                                     return element.id == task.id;
                                   });
-                                  return AlertDialog(
-                                    title: Text(
-                                      'Task has been deleted!',
-                                      style: TextStyle(
-                                        fontSize: ThemeProvider.themeOf(context)
-                                            .data
-                                            .textTheme
-                                            .headline4
-                                            .fontSize,
-                                        fontWeight: ThemeProvider.themeOf(context)
-                                            .data
-                                            .textTheme
-                                            .headline4
-                                            .fontWeight,
-                                        fontFamily: ThemeProvider.themeOf(context)
-                                            .data
-                                            .textTheme
-                                            .headline4
-                                            .fontFamily,
-                                        color: ThemeProvider.controllerOf(context).theme.id ==
-                                            'light_theme'
-                                            ? Colors.black
-                                            : Colors.white,
-                                      ),
-                                    ),
-                                    actions: [
-                                      FlatButton(
-                                        child: Text(
-                                          'OK',
+                                  return WillPopScope(
+                                    onWillPop: () => Future.value(false),
+                                    child: AlertDialog(
+                                      title: Text(
+                                        'Task has been deleted!',
+                                        style: TextStyle(
+                                          fontSize: ThemeProvider.themeOf(context)
+                                              .data
+                                              .textTheme
+                                              .headline4
+                                              .fontSize,
+                                          fontWeight: ThemeProvider.themeOf(context)
+                                              .data
+                                              .textTheme
+                                              .headline4
+                                              .fontWeight,
+                                          fontFamily: ThemeProvider.themeOf(context)
+                                              .data
+                                              .textTheme
+                                              .headline4
+                                              .fontFamily,
+                                          color: ThemeProvider.controllerOf(context).theme.id ==
+                                              'light_theme'
+                                              ? Colors.black
+                                              : Colors.white,
                                         ),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                          Navigator.of(context).pop();
-                                          if (mounted) {
-                                            setState(() {});
-                                          }
-                                        },
                                       ),
-                                    ],
+                                      actions: [
+                                        FlatButton(
+                                          child: Text(
+                                            'OK',
+                                          ),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                            Navigator.of(context).pop();
+                                            if (mounted) {
+                                              setState(() {});
+                                            }
+                                          },
+                                        ),
+                                      ],
+                                    ),
                                   );
                                 } else {
                                   return UserLoadingPage('Deleting the task ...');

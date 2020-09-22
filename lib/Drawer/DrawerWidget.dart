@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:theme_provider/theme_provider.dart';
 import 'package:to_do_list_app/Global/Global.dart';
+import 'package:to_do_list_app/Loading/UserLoading.dart';
 import 'package:to_do_list_app/Settings/SettingsPage.dart';
+import 'package:to_do_list_app/ToDoList/ToDoListWidget.dart';
 
 class DrawerWidget extends StatefulWidget {
   @override
@@ -10,6 +12,9 @@ class DrawerWidget extends StatefulWidget {
 }
 
 class _DrawerWidgetState extends State<DrawerWidget> {
+
+  Global _global = Global.getInstance();
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -46,6 +51,27 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     return ThemeConsumer(child: SettingsPage());
                   },
                 ),
+              );
+            },
+          ),
+          ListTile(
+            title: Text(
+              'Delete all tasks',
+              style: Theme.of(context).textTheme.headline1,
+            ),
+            leading: Icon(
+              Icons.delete_sweep,
+            ),
+            onTap: () async {
+              return FutureBuilder(
+                future: _global.deleteAllTasks(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    return ThemeConsumer(child: ToDoListWidget(),);
+                  } else {
+                    return UserLoadingPage('Deleting all tasks ...');
+                  }
+                },
               );
             },
           ),

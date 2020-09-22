@@ -41,7 +41,16 @@ class _CreateUserNamePageState extends State<CreateUserNamePage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Image.asset('assets/userNamePage.png'),
+          Container(
+            // height: 200,
+            // width: 200,
+            //color: Colors.deepPurpleAccent,
+            child: Image.asset('assets/Logo/loadingLogo.png'),
+            // child: FlatButton(
+            //   child: Text("SSSSSSSSSSSSSSss"),
+            //   onPressed: () {},
+            // ),
+          ),
           Padding(
             // title
             padding: EdgeInsets.all(20),
@@ -55,7 +64,7 @@ class _CreateUserNamePageState extends State<CreateUserNamePage> {
               ),
               child: TextFormField(
                 initialValue: _global.userName ?? "",
-                style: ThemeProvider.themeOf(context).data.textTheme.subtitle2,
+                style: ThemeProvider.themeOf(context).data.textTheme.headline2,
                 cursorColor: Colors.black,
                 key: userNameKey,
                 decoration: InputDecoration(
@@ -92,8 +101,6 @@ class _CreateUserNamePageState extends State<CreateUserNamePage> {
             ),
             onPressed: () async {
               if (userNameKey.currentState.validate()) {
-                // TO DO WRITE IN SQLITE TABLE THE USER NAME
-                // the ID for the only USER will be ID = 1.
                 FutureBuilder(
                   future: createUser(User(_global.userID, userName)),
                   builder: (context, snapshot) {
@@ -116,9 +123,7 @@ class _CreateUserNamePageState extends State<CreateUserNamePage> {
   }
 
   Future<User> createUser(User user) async {
-    final Database db = await openDatabase(
-      join(await getDatabasesPath(), _global.databaseName),
-    );
+    final Database db = _global.database;
     await db.insert(
       'users',
       user.toMap(),

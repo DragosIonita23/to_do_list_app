@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:theme_provider/theme_provider.dart';
 import 'package:to_do_list_app/CreateUserName/CreateUserNamePage.dart';
 import 'package:to_do_list_app/Global/Global.dart';
 import 'package:to_do_list_app/Loading/LoadingPage.dart';
@@ -26,10 +27,11 @@ class _WelcomePageState extends State<WelcomePage> {
     return FutureBuilder(
       future: _global.loadData(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return _global.userName != null ? ToDoListWidget() : CreateUserNamePage();
+        if (snapshot.hasData) {
+          return (_global.userName != null && _global.userName != "") ? ThemeConsumer(child: ToDoListWidget(),) : ThemeConsumer(child: CreateUserNamePage(),);
+        } else {
+          return LoadingPage();
         }
-        return LoadingPage();
       },
     );
   }

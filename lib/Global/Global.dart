@@ -16,8 +16,7 @@ class Global {
 
   RegExp nameValidator = RegExp(r'^[a-zA-ZăĂâÂîÎțȚșȘ]+$');
 
-  String
-      userName; // load-uit din SQLite sau cerut in loading screen (daca e null)
+  String userName = ""; // load-uit din SQLite sau cerut in loading screen (daca e null)
 
   List<Task> toDoList = List<Task>();
 
@@ -40,11 +39,11 @@ class Global {
   // String category; // 2 categories for importance hierarchy
   // int done; // 0 for false, 1 for true
 
-  Future<void> loadData() async {
+  Future<bool> loadData() async {
     await createTables();
     await readTables();
+    return true;
   }
-
 
   Future<void> createTables() async {
     _database = await openDatabase(
@@ -53,13 +52,12 @@ class Global {
         await database.execute(
           "CREATE TABLE tasks(id INTEGER PRIMARY KEY, title TEXT, description TEXT, category TEXT, done INTEGER)",
         );
-        await database.execute(
-            "CREATE TABLE users(id INTEGER PRIMARY KEY, name TEXT)"
+        await database
+            .execute("CREATE TABLE users(id INTEGER PRIMARY KEY, name TEXT)"
         );
       },
       version: 1,
     );
-
   }
 
   Future<void> readTables() async {
@@ -80,11 +78,13 @@ class Global {
         tasksMaps[i]['done'],
       );
     });
-    userName = usersList[0].name;
+    if (usersList != null && usersList.isNotEmpty) {
+      userName = usersList[0].name;
+    } else {
+      userName = "";
+    }
     toDoList = List.from(tasksList);
     lastIndex = getLastIndexFromList(toDoList);
-    print("@@@@@ TO DO LIST = " + toDoList.toString());
-    print("@@@@@@@@ USERNAME = " + userName);
   }
 
   int getLastIndexFromList(List<Task> toDoList) {
@@ -93,5 +93,17 @@ class Global {
       if (toDoList[i].id > max) max = toDoList[i].id;
     }
     return max;
+  }
+
+  Future<void> deleteAllTasks() async {
+    for (int i = 0; i < _global.toDoList.length; i++) {
+      await _global.database.delete(
+        'tasks',
+        where: "id = ?",
+        whereArgs: [_global.toDoList[i].id],
+      );
+    }
+    _global.lastIndex = 0;
+    _global.toDoList = List<Task>();
   }
 }
