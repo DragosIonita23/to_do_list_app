@@ -1,20 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_indicators/progress_indicators.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:theme_provider/theme_provider.dart';
 import 'package:to_do_list_app/Global/Global.dart';
 import 'package:to_do_list_app/Loading/UserLoading.dart';
 import 'package:to_do_list_app/Task/Task.dart';
+import 'package:to_do_list_app/ToDoList/ToDoListWidget.dart';
 
-class AddTaskPage extends StatefulWidget {
+class UpdateTaskWidget extends StatefulWidget {
+  final Task task;
+
+  const UpdateTaskWidget(this.task, {Key key}) : super(key: key);
+
   @override
-  _AddTaskPageState createState() => _AddTaskPageState();
+  _UpdateTaskWidgetState createState() => _UpdateTaskWidgetState(task);
 }
 
-class _AddTaskPageState extends State<AddTaskPage> {
-  String category = "";
-  String title, description;
+class _UpdateTaskWidgetState extends State<UpdateTaskWidget> {
+  _UpdateTaskWidgetState(this.task);
+
+  Task task;
 
   Global _global;
 
@@ -30,6 +35,9 @@ class _AddTaskPageState extends State<AddTaskPage> {
 
   @override
   Widget build(BuildContext context) {
+    // update task widget
+    // text form fields ca la addtask page, doar ca
+    // difera metoda de final.
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -55,7 +63,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                     ),
                   ),
                   child: TextFormField(
-                    initialValue: "",
+                    initialValue: task.title,
                     style:
                         ThemeProvider.themeOf(context).data.textTheme.subtitle2,
                     cursorColor: Colors.black,
@@ -69,7 +77,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                       if (_global.nameValidator.hasMatch(value) &&
                           value.isNotEmpty &&
                           value.length <= 25) {
-                        title = value;
+                        task.title = value;
                         return null;
                       } else {
                         return 'Invalid Title\n.Maximum 80 alpha-numeric characters allowed.';
@@ -77,7 +85,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                     },
                     onFieldSubmitted: (String value) {
                       if (titleKey.currentState.validate()) {
-                        title = value;
+                        task.title = value;
                       }
                     },
                   ),
@@ -95,7 +103,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                     ),
                   ),
                   child: TextFormField(
-                    initialValue: "",
+                    initialValue: task.description.substring(0, 20) + "...",
                     style:
                         ThemeProvider.themeOf(context).data.textTheme.subtitle2,
                     cursorColor: Colors.black,
@@ -109,7 +117,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                       if (_global.nameValidator.hasMatch(value) &&
                           value.isNotEmpty &&
                           value.length <= 80) {
-                        description = value;
+                        task.description = value;
                         return null;
                       } else {
                         return 'Invalid description.\nMaximum 80 alpha-numeric characters allowed.';
@@ -117,7 +125,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                     },
                     onFieldSubmitted: (String value) {
                       if (descriptionKey.currentState.validate()) {
-                        description = value;
+                        task.description = value;
                       }
                     },
                   ),
@@ -168,7 +176,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                                 ),
                                 onPressed: () {
                                   setState(() {
-                                    category = 'Normal';
+                                    task.category = 'Normal';
                                   });
                                 },
                               ),
@@ -201,7 +209,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                                 ),
                                 onPressed: () {
                                   setState(() {
-                                    category = 'Important';
+                                    task.category = 'Important';
                                   });
                                 },
                               ),
@@ -218,52 +226,153 @@ class _AddTaskPageState extends State<AddTaskPage> {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        child: Center(
-          child: FlatButton(
-            child: Text(
-              'Add task',
-              style: ThemeProvider.themeOf(context).data.textTheme.headline4,
-            ),
-            onPressed: () {
-              if (titleKey.currentState.validate() &&
-                  descriptionKey.currentState.validate()) {
-                if (category == "") {
-                  showSnackBar(
-                      _scaffoldKey, 'Please choose a category for your task');
+        child: Row(
+          children: [
+            FlatButton(
+              child: Text(
+                'Update this task',
+                style: ThemeProvider.themeOf(context).data.textTheme.headline4,
+              ),
+              onPressed: () {
+                if (titleKey.currentState.validate() &&
+                    descriptionKey.currentState.validate()) {
+                  if (task.category == "") {
+                    showSnackBar(
+                        _scaffoldKey, 'Please choose a category for your task');
+                  } else {
+                    // updates the database and the local list in global
+                    return FutureBuilder(
+                      future: updateTask(task),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return UserLoadingPage('Updating your task ...');
+                        }
+                        return this.build(context);
+                      },
+                    );
+                  }
                 } else {
-                  // TO DO SQLITE INSERT ROW IN TASKS TABLE
-                  var index = _global.lastIndex + 1;
-                  return FutureBuilder(
-                    future: insertTask(Task(index, title, description, category, 0)),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) {
-                        return UserLoadingPage('Adding your new task ...');
-                      }
-                      _global.toDoList.add(
-                        Task(index, title, description, category, 0),
-                      );
-                      return this.build(context);
-                    },
-                  );
+                  showSnackBar(_scaffoldKey,
+                      'The title and the description must be validated.');
                 }
-              } else {
-                showSnackBar(_scaffoldKey,
-                    'The title and the description must be validated.');
-              }
-            },
-          ),
+              },
+            ),
+            FlatButton(
+              child: Text(
+                'Delete this task',
+                style: ThemeProvider.themeOf(context).data.textTheme.headline4,
+              ),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text(
+                        'Are you sure you want to DELETE this task?',
+                        style: TextStyle(
+                          fontSize: ThemeProvider.themeOf(context)
+                              .data
+                              .textTheme
+                              .headline4
+                              .fontSize,
+                          fontWeight: ThemeProvider.themeOf(context)
+                              .data
+                              .textTheme
+                              .headline4
+                              .fontWeight,
+                          fontFamily: ThemeProvider.themeOf(context)
+                              .data
+                              .textTheme
+                              .headline4
+                              .fontFamily,
+                          color: ThemeProvider.controllerOf(context).theme.id ==
+                                  'light_theme'
+                              ? Colors.black
+                              : Colors.white,
+                        ),
+                      ),
+                      actions: [
+                        FlatButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(
+                            'Cancel',
+                          ),
+                        ),
+                        FlatButton(
+                          onPressed: () async {
+                            return FutureBuilder(
+                              future: _global.database.delete(
+                                'tasks',
+                                where: "id = ?",
+                                whereArgs: [task.id],
+                              ),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState == ConnectionState.done) {
+                                  _global.toDoList.removeWhere((element) {
+                                    return element.id == task.id;
+                                  });
+                                  return AlertDialog(
+                                    title: Text(
+                                      'Task has been deleted!',
+                                      style: TextStyle(
+                                        fontSize: ThemeProvider.themeOf(context)
+                                            .data
+                                            .textTheme
+                                            .headline4
+                                            .fontSize,
+                                        fontWeight: ThemeProvider.themeOf(context)
+                                            .data
+                                            .textTheme
+                                            .headline4
+                                            .fontWeight,
+                                        fontFamily: ThemeProvider.themeOf(context)
+                                            .data
+                                            .textTheme
+                                            .headline4
+                                            .fontFamily,
+                                        color: ThemeProvider.controllerOf(context).theme.id ==
+                                            'light_theme'
+                                            ? Colors.black
+                                            : Colors.white,
+                                      ),
+                                    ),
+                                    actions: [
+                                      FlatButton(
+                                        child: Text(
+                                          'OK',
+                                        ),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                          Navigator.of(context).pop();
+                                          if (mounted) {
+                                            setState(() {});
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                } else {
+                                  return UserLoadingPage('Deleting the task ...');
+                                }
+                              },
+                            );
+                          },
+                          child: Text(
+                            'OK',
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
-  }
-
-  Future<Task> insertTask(Task task) async {
-    await _global.database.insert(
-      'tasks',
-      task.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-    return task;
   }
 
   void showSnackBar(_scaffoldKey, message) {
@@ -289,5 +398,22 @@ class _AddTaskPageState extends State<AddTaskPage> {
     );
     _scaffoldKey.currentState.hideCurrentSnackBar();
     _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
+
+  Future<Task> updateTask(Task task) async {
+    await _global.database.update(
+      'tasks',
+      task.toMap(),
+      where: "id = ?",
+      whereArgs: [task.id],
+    );
+    for (int i = 0; i < _global.toDoList.length; i++) {
+      if (_global.toDoList[i].id == task.id) {
+        _global.toDoList[i] = Task(
+            task.id, task.title, task.description, task.category, task.done);
+        break;
+      }
+    }
+    return task;
   }
 }

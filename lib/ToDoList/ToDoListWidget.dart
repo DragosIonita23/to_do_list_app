@@ -7,10 +7,12 @@ import 'dart:async';
 
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:to_do_list_app/Loading/LoadingPage.dart';
 import 'package:to_do_list_app/Task/Task.dart';
 import 'package:to_do_list_app/ToDoList/TaskWidget.dart';
 
 import 'AddTaskPage.dart';
+import 'UpdateTaskWidget.dart';
 
 class ToDoListWidget extends StatefulWidget {
   @override
@@ -28,63 +30,43 @@ class _ToDoListWidgetState extends State<ToDoListWidget> {
 
   @override
   Widget build(BuildContext context) {
+    _global.toDoList.sort((task1, task2) {
+      return task2.id - task1.id;
+    });
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'To Do List Application',
-          style: ThemeProvider.themeOf(context).data.textTheme.headline5,
-        ),
-      ),
-      body: _global.toDoList.isEmpty
-          ? Container(
-              child: Card(
-                child: ListTile(
-                  title: Text(
-                    'You don\'t have any tasks to do right now',
-                    style:
-                        ThemeProvider.themeOf(context).data.textTheme.headline5,
-                  ),
+      appBar: AppBar(),
+      body: ListView.builder(
+        itemCount: _global.toDoList.length,
+        itemBuilder: (context, i) {
+          return Padding(
+            padding: EdgeInsets.all(8),
+            child: Card(
+              child: ListTile(
+                title: Text(
+                  _global.toDoList[i].title,
+                  style: ThemeProvider.themeOf(context).data.textTheme.headline4,
                 ),
-              ),
-            )
-          : ListView.builder(
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(
-                    'Task 1 demo',
-                    style:
-                        ThemeProvider.themeOf(context).data.textTheme.headline4,
-                  ),
-                  onTap: () {
+                trailing: IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => TaskWidget(Task(1,'asdad','adsa','Important',false),),
+                        builder: (context) {
+                          return UpdateTaskWidget(_global.toDoList[i]);
+                        }
                       ),
-                    );
+                    ).then((value) {
+                      setState(() { });
+                    });
                   },
-                );
-              },
+                ),
+              ),
             ),
-      drawer: DrawerWidget(),
+          );
+        },
+      ),
       bottomNavigationBar: BottomAppBar(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            IconButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => AddTaskPage(),
-                  ),
-                );
-                // TO DO INSERT A ROW IN TASK TABLE SQLITE
-              },
-              icon: Icon(Icons.add_circle_outline),
-              iconSize: 22,
-            ),
-          ],
-        ),
+
       ),
     );
   }

@@ -1,21 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:progress_indicators/progress_indicators.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:theme_provider/theme_provider.dart';
 import 'package:to_do_list_app/Global/Global.dart';
 import 'package:to_do_list_app/Loading/UserLoading.dart';
 import 'package:to_do_list_app/User/User.dart';
 
-class UserNameWidget extends StatefulWidget {
+class CreateUserNamePage extends StatefulWidget {
   @override
-  _UserNameWidgetState createState() => _UserNameWidgetState();
+  _CreateUserNamePageState createState() => _CreateUserNamePageState();
 }
 
-class _UserNameWidgetState extends State<UserNameWidget> {
-  final GlobalKey<FormFieldState> nameKey = GlobalKey<FormFieldState>();
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+class _CreateUserNamePageState extends State<CreateUserNamePage> {
+  String userName;
 
   Global _global;
+
+  final GlobalKey<FormFieldState> userNameKey = GlobalKey<FormFieldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -23,25 +27,23 @@ class _UserNameWidgetState extends State<UserNameWidget> {
     super.initState();
   }
 
-  String name;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
       key: _scaffoldKey,
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
-          'Your profile',
+          'Welcome to your To Do App',
           style: ThemeProvider.themeOf(context).data.textTheme.headline5,
         ),
-        centerTitle: true,
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          Image.asset('assets/userNamePage.png'),
           Padding(
+            // title
             padding: EdgeInsets.all(20),
             child: Container(
               decoration: BoxDecoration(
@@ -55,65 +57,77 @@ class _UserNameWidgetState extends State<UserNameWidget> {
                 initialValue: _global.userName ?? "",
                 style: ThemeProvider.themeOf(context).data.textTheme.subtitle2,
                 cursorColor: Colors.black,
-                key: nameKey,
+                key: userNameKey,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person),
                   border: InputBorder.none,
-                  labelText: 'User name',
+                  labelText: 'What\'s your name?',
                 ),
                 validator: (String value) {
                   if (_global.nameValidator.hasMatch(value) &&
-                      value.isNotEmpty) {
-                    name = value;
+                      value.isNotEmpty &&
+                      value.length <= 25) {
+                    userName = value;
                     return null;
                   } else {
-                    return 'Invalid user name';
+                    return 'Invalid Title\n.Maximum 25 alpha-numeric characters allowed.';
                   }
                 },
                 onFieldSubmitted: (String value) {
-                  if (nameKey.currentState.validate()) {
-                    name = value;
+                  if (userNameKey.currentState.validate()) {
+                    userName = value;
                   }
                 },
               ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: RaisedButton(
-              color: Colors.deepPurpleAccent,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              padding: EdgeInsets.all(15),
-              child: Text(
-                'Change your profile name',
-                style: ThemeProvider.themeOf(context).data.textTheme.headline2,
-              ),
-              onPressed: () async {
-                if (nameKey.currentState.validate()) {
-                  FutureBuilder(
-                    future: updateName(User(_global.userID, name)),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) {
-                        return UserLoadingPage('Updating user name ...');
-                      }
-                      _global.userName = name;
-                      return this.build(context);
-                    },
-                  );
-                } else {
-                  errorSnackBar(_scaffoldKey);
-                }
-              },
             ),
           ),
         ],
       ),
+      bottomNavigationBar: BottomAppBar(
+        child: Center(
+          child: FlatButton(
+            child: Text(
+              'Update User Name',
+              style: ThemeProvider.themeOf(context).data.textTheme.headline4,
+            ),
+            onPressed: () async {
+              if (userNameKey.currentState.validate()) {
+                // TO DO WRITE IN SQLITE TABLE THE USER NAME
+                // the ID for the only USER will be ID = 1.
+                FutureBuilder(
+                  future: createUser(User(_global.userID, userName)),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return UserLoadingPage('Creating user name ...');
+                    }
+                    _global.userName = userName;
+                    return this.build(context);
+                  },
+                );
+              } else {
+                showSnackBar(
+                    _scaffoldKey, 'The username must be validated.');
+              }
+            },
+          ),
+        ),
+      ),
     );
   }
 
-  void errorSnackBar(_scaffoldKey) {
+  Future<User> createUser(User user) async {
+    final Database db = await openDatabase(
+      join(await getDatabasesPath(), _global.databaseName),
+    );
+    await db.insert(
+      'users',
+      user.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+    return user;
+  }
+
+  void showSnackBar(_scaffoldKey, message) {
     final snackBar = SnackBar(
       duration: Duration(seconds: 3),
       content: Container(
@@ -123,7 +137,7 @@ class _UserNameWidgetState extends State<UserNameWidget> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             FadingText(
-              'An internal error has occured',
+              message,
               style: TextStyle(
                 fontSize: 20.0,
                 color: Colors.white,
@@ -136,16 +150,5 @@ class _UserNameWidgetState extends State<UserNameWidget> {
     );
     _scaffoldKey.currentState.hideCurrentSnackBar();
     _scaffoldKey.currentState.showSnackBar(snackBar);
-  }
-
-  Future<User> updateName(User user) async {
-    await _global.database.update(
-      'users',
-      user.toMap(),
-      where: "id = ?",
-      whereArgs: [user.id],
-    );
-    print("@@@@@@@ user = " + user.id.toString() + user.name + "\n");
-    return user;
   }
 }

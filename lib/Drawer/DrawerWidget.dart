@@ -18,7 +18,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           DrawerHeader(
             child: Center(
               child: Text(
-                'Greetings, ' + Global.getInstance().userName,
+                'Greetings, ' + (Global.getInstance().userName ?? "Dear user"),
                 style: TextStyle(
                     fontFamily: 'Lobster',
                     fontWeight:

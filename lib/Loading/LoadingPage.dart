@@ -16,7 +16,7 @@ class _LoadingScreenState extends State<LoadingPage> {
       body: Center(
         child: HeartbeatProgressIndicator(
           child: Image.asset(
-            'assets/Logo/toDoListLoadingLogo.png',
+            'assets/Logo/loadingLogo.png',
             height: 70,
             width: 70,
           ),

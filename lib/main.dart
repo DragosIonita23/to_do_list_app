@@ -7,6 +7,8 @@ import 'Drawer/DrawerWidget.dart';
 import 'Themes/Themes.dart';
 import 'package:to_do_list_app/ToDoList/ToDoListWidget.dart';
 
+import 'Welcome/WelcomePage.dart';
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -34,8 +36,8 @@ class MyApp extends StatelessWidget {
           child: Builder(
             builder: (themeContext) => MaterialApp(
               theme: ThemeProvider.themeOf(themeContext).data,
-              title: 'Fire Food Delivery App',
-              home: ToDoListWidget(),
+              title: 'To Do Flutter App',
+              home: WelcomePage(),
             ),
           ),
         ),
