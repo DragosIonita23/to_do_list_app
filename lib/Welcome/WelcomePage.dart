@@ -27,10 +27,9 @@ class _WelcomePageState extends State<WelcomePage> {
         if (snapshot.hasData) {
           return (_global.userName != null && _global.userName != "")
               ? ThemeConsumer(
-                  child: ToDoListWidget(),
+                  child: ToDoListWidget(), // ASTA E OK
                 )
               : ThemeConsumer(
-                  //child: CreateUserNamePage(),
                   child: CreateUserNamePage(),
                 );
         } else {

@@ -41,217 +41,233 @@ class _AddTaskPageState extends State<AddTaskPage> {
           ),
           centerTitle: true,
         ),
-        body: Column(
-          children: [
-            Padding(
-              // title
-              padding: EdgeInsets.all(20),
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: ThemeProvider.themeOf(context).id == 'light_theme'
-                        ? Colors.black
-                        : Colors.white54,
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                // title
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: ThemeProvider.themeOf(context).id == 'light_theme'
+                          ? Colors.black
+                          : Colors.white54,
+                    ),
                   ),
-                ),
-                child: TextFormField(
-                  initialValue: "",
-                  style:
-                      ThemeProvider.themeOf(context).data.textTheme.headline2,
-                  cursorColor: Colors.black,
-                  key: titleKey,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.text_fields),
-                    border: InputBorder.none,
-                    labelText: 'Task title',
+                  child: TextFormField(
+                    initialValue: "",
+                    style:
+                        ThemeProvider.themeOf(context).data.textTheme.headline2,
+                    cursorColor: Colors.black,
+                    key: titleKey,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.text_fields,
+                        color: Colors.black,
+                      ),
+                      border: InputBorder.none,
+                      labelText: 'Task title',
+                      labelStyle: TextStyle(
+                        color: Colors.black,
+                      ),
+                    ),
+                    validator: (String value) {
+                      if (_global.nameValidator.hasMatch(value) &&
+                          value.isNotEmpty &&
+                          value.length <= 25) {
+                        title = value;
+                        return null;
+                      } else {
+                        return 'Invalid Title\n.Maximum 80 alpha-numeric characters allowed.';
+                      }
+                    },
+                    onFieldSubmitted: (String value) {
+                      if (titleKey.currentState.validate()) {
+                        title = value;
+                      }
+                    },
                   ),
-                  validator: (String value) {
-                    if (_global.nameValidator.hasMatch(value) &&
-                        value.isNotEmpty &&
-                        value.length <= 25) {
-                      title = value;
-                      return null;
-                    } else {
-                      return 'Invalid Title\n.Maximum 80 alpha-numeric characters allowed.';
-                    }
-                  },
-                  onFieldSubmitted: (String value) {
-                    if (titleKey.currentState.validate()) {
-                      title = value;
-                    }
-                  },
                 ),
               ),
-            ),
-            Padding(
-              // description
-              padding: EdgeInsets.all(20),
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: ThemeProvider.themeOf(context).id == 'light_theme'
-                        ? Colors.black
-                        : Colors.white54,
+              Padding(
+                // description
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: ThemeProvider.themeOf(context).id == 'light_theme'
+                          ? Colors.black
+                          : Colors.white54,
+                    ),
+                  ),
+                  child: TextFormField(
+                    initialValue: "",
+                    style:
+                        ThemeProvider.themeOf(context).data.textTheme.headline2,
+                    cursorColor: Colors.black,
+                    key: descriptionKey,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.description,
+                        color: Colors.black,
+                      ),
+                      border: InputBorder.none,
+                      labelText: 'Description of the task',
+                      labelStyle: TextStyle(
+                        color: Colors.black,
+                      ),
+                    ),
+                    validator: (String value) {
+                      if (_global.nameValidator.hasMatch(value) &&
+                          value.isNotEmpty &&
+                          value.length <= 80) {
+                        description = value;
+                        return null;
+                      } else {
+                        return 'Invalid description.\nMaximum 80 alpha-numeric characters allowed.';
+                      }
+                    },
+                    onFieldSubmitted: (String value) {
+                      if (descriptionKey.currentState.validate()) {
+                        description = value;
+                      }
+                    },
                   ),
                 ),
-                child: TextFormField(
-                  initialValue: "",
-                  style:
-                      ThemeProvider.themeOf(context).data.textTheme.headline2,
-                  cursorColor: Colors.black,
-                  key: descriptionKey,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.description),
-                    border: InputBorder.none,
-                    labelText: 'Description of the task',
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                child: ListTile(
+                  title: Center(
+                    child: Text(
+                      'Choose category:',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontFamily: ThemeProvider.themeOf(context).data.textTheme.headline3.fontFamily,
+                        fontSize: ThemeProvider.themeOf(context).data.textTheme.headline3.fontSize,
+                        fontWeight: ThemeProvider.themeOf(context).data.textTheme.headline3.fontWeight,
+                      ),
+                    ),
                   ),
-                  validator: (String value) {
-                    if (_global.nameValidator.hasMatch(value) &&
-                        value.isNotEmpty &&
-                        value.length <= 80) {
-                      description = value;
-                      return null;
-                    } else {
-                      return 'Invalid description.\nMaximum 80 alpha-numeric characters allowed.';
-                    }
-                  },
-                  onFieldSubmitted: (String value) {
-                    if (descriptionKey.currentState.validate()) {
-                      description = value;
-                    }
-                  },
                 ),
               ),
-            ),
-            FlatButton(
-              child: Text(
-                'Show categories',
-                style:
-                    ThemeProvider.themeOf(context).data.textTheme.headline3,
-              ),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      content: Container(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            FlatButton(
-                              child: Text(
-                                'Normal',
-                                style: TextStyle(
-                                  color: ThemeProvider.controllerOf(context)
-                                              .theme
-                                              .id ==
-                                          'light_theme'
-                                      ? Colors.black
-                                      : Colors.white,
-                                  fontSize: ThemeProvider.themeOf(context)
-                                      .data
-                                      .textTheme
-                                      .headline3
-                                      .fontSize,
-                                  fontFamily: ThemeProvider.themeOf(context)
-                                      .data
-                                      .textTheme
-                                      .headline3
-                                      .fontFamily,
-                                  fontWeight: ThemeProvider.themeOf(context)
-                                      .data
-                                      .textTheme
-                                      .headline3
-                                      .fontWeight,
-                                ),
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  category = 'Normal';
-                                });
-                              },
-                            ),
-                            FlatButton(
-                              child: Text(
-                                'Important',
-                                style: TextStyle(
-                                  color: ThemeProvider.controllerOf(context)
-                                              .theme
-                                              .id ==
-                                          'light_theme'
-                                      ? Colors.black
-                                      : Colors.white,
-                                  fontSize: ThemeProvider.themeOf(context)
-                                      .data
-                                      .textTheme
-                                      .headline3
-                                      .fontSize,
-                                  fontFamily: ThemeProvider.themeOf(context)
-                                      .data
-                                      .textTheme
-                                      .headline3
-                                      .fontFamily,
-                                  fontWeight: ThemeProvider.themeOf(context)
-                                      .data
-                                      .textTheme
-                                      .headline3
-                                      .fontWeight,
-                                ),
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  category = 'Important';
-                                });
-                              },
-                            ),
-                          ],
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    RaisedButton(
+                      child: Text(
+                        'Normal',
+                        style: TextStyle(
+                          color: ThemeProvider.controllerOf(context)
+                              .theme
+                              .id ==
+                              'light_theme'
+                              ? Colors.black
+                              : Colors.white,
+                          fontSize: ThemeProvider.themeOf(context)
+                              .data
+                              .textTheme
+                              .headline2
+                              .fontSize,
+                          fontFamily: ThemeProvider.themeOf(context)
+                              .data
+                              .textTheme
+                              .headline3
+                              .fontFamily,
+                          fontWeight: ThemeProvider.themeOf(context)
+                              .data
+                              .textTheme
+                              .headline2
+                              .fontWeight,
                         ),
                       ),
-                    );
-                  },
-                );
-              },
-            ),
-          ],
+                      onPressed: () {
+                        setState(() {
+                          category = 'Normal';
+                        });
+                      },
+                      color: category == 'Normal' ? Colors.deepPurpleAccent : Colors.white,
+                    ),
+                    RaisedButton(
+                      child: Text(
+                        'Important',
+                        style: TextStyle(
+                          color: ThemeProvider.controllerOf(context)
+                              .theme
+                              .id ==
+                              'light_theme'
+                              ? Colors.black
+                              : Colors.white,
+                          fontSize: ThemeProvider.themeOf(context)
+                              .data
+                              .textTheme
+                              .headline2
+                              .fontSize,
+                          fontFamily: ThemeProvider.themeOf(context)
+                              .data
+                              .textTheme
+                              .headline3
+                              .fontFamily,
+                          fontWeight: ThemeProvider.themeOf(context)
+                              .data
+                              .textTheme
+                              .headline2
+                              .fontWeight,
+                        ),
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          category = 'Important';
+                        });
+                      },
+                      color: category == 'Important' ? Colors.deepPurpleAccent : Colors.white,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
         bottomNavigationBar: BottomAppBar(
-          child: Center(
-            child: FlatButton(
-              child: Text(
-                'Add task',
-                style: ThemeProvider.themeOf(context).data.textTheme.headline3,
-              ),
-              onPressed: () {
-                if (titleKey.currentState.validate() &&
-                    descriptionKey.currentState.validate()) {
-                  if (category == "") {
-                    showSnackBar(
-                        _scaffoldKey, 'Choose a category');
-                  } else {
-                    // TO DO SQLITE INSERT ROW IN TASKS TABLE
-                    var index = _global.lastIndex + 1;
-                    return FutureBuilder(
-                      future: insertTask(Task(index, title, description, category, 0)),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return UserLoadingPage('Adding your new task ...');
-                        } else {
-                          _global.toDoList.add(
-                            Task(index, title, description, category, 0),
-                          );
-                          Navigator.of(context).pop();
-                          return ThemeConsumer(child: ToDoListWidget(),);
-                        }
-                      },
-                    );
-                  }
-                } else {
-                  showSnackBar(_scaffoldKey,
-                      'Validation error.');
-                }
-              },
+          color: Colors.deepPurpleAccent,
+          child: FlatButton(
+            child: Text(
+              'Add task',
+              style: ThemeProvider.themeOf(context).data.textTheme.headline3,
             ),
+            onPressed: () {
+              if (titleKey.currentState.validate() &&
+                  descriptionKey.currentState.validate()) {
+                if (category == "") {
+                  showSnackBar(_scaffoldKey, 'Choose a category');
+                } else {
+                  // TO DO SQLITE INSERT ROW IN TASKS TABLE
+                  var index = _global.lastIndex + 1;
+                  return FutureBuilder(
+                    future: insertTask(
+                        Task(index, title, description, category, 0)),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return UserLoadingPage('Adding your new task ...');
+                      } else {
+                        _global.toDoList.add(
+                          Task(index, title, description, category, 0),
+                        );
+                        return ThemeConsumer(
+                          child: ToDoListWidget(),
+                        );
+                      }
+                    },
+                  );
+                }
+              } else {
+                showSnackBar(_scaffoldKey, 'Validation error.');
+              }
+            },
           ),
         ),
       ),
